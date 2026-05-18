@@ -1,9 +1,8 @@
 """
 DBL Schedule Scraper — Playwright (headless Chrome)
 
-Laadt twee expliciete week-URLs:
-  - Meest recente afgelopen week  → data-state="played"  → uitslagen
-  - Eerstvolgende toekomstige week → data-state="planned" → programma
+Uitslagen : week-URL teruglopend tot played gevonden
+Programma : week-URL vooruitlopend, fallback naar standaard URL als niets gevonden
 
 Installatie (eenmalig):
     pip install playwright
@@ -157,27 +156,23 @@ def process(raw_games):
     return games
 
 
-def week_url(w):
-    return f"{BASE_URL}?year={w['year']}&week={w['week']}"
-
-
-def load_page(page, url):
+def load(page, url):
+    print(f"  Laden: {url}")
     page.goto(url, wait_until="domcontentloaded", timeout=30000)
     page.wait_for_selector("div.game", timeout=12000)
-    return process(page.evaluate(EXTRACT_JS))
+    games = process(page.evaluate(EXTRACT_JS))
+    played  = sum(1 for g in games if g["gespeeld"])
+    planned = sum(1 for g in games if not g["gespeeld"])
+    print(f"  → {len(games)} wedstrijden ({played} played, {planned} planned)")
+    return games
 
 
 def main():
     today = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
-    print(f"DBL scraper gestart — {dt.datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
-    print(f"Vandaag: {today}\n")
+    print(f"DBL scraper gestart — {dt.datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}\n")
 
-    # Splits WEEKS in afgelopen en toekomstig op basis van de zondag van die week
-    afgelopen  = [w for w in WEEKS if dt.date.fromisocalendar(w["year"], w["week"], 7) < today]
+    afgelopen  = list(reversed([w for w in WEEKS if dt.date.fromisocalendar(w["year"], w["week"], 7) < today]))
     toekomstig = [w for w in WEEKS if dt.date.fromisocalendar(w["year"], w["week"], 5) > today]
-
-    print(f"Afgelopen weken : {[w['week'] for w in afgelopen]}")
-    print(f"Toekomstig weken: {[w['week'] for w in toekomstig]}\n")
 
     uitslagen      = []
     programma      = []
@@ -196,39 +191,47 @@ def main():
         )
         page = context.new_page()
 
-        # --- Uitslagen: meest recente afgelopen week met played wedstrijden ---
-        for w in reversed(afgelopen):
-            url = week_url(w)
-            print(f"Uitslagen — week {w['week']} ({w['label']}): {url}")
+        # --- Uitslagen: teruglopend door afgelopen weken ---
+        print("=== UITSLAGEN ===")
+        for w in afgelopen[:4]:
             try:
-                games  = load_page(page, url)
+                games  = load(page, f"{BASE_URL}?year={w['year']}&week={w['week']}")
                 played = [g for g in games if g["gespeeld"]]
-                print(f"  → {len(games)} wedstrijden geladen, {len(played)} gespeeld")
                 if played:
                     uitslagen      = sorted(played, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
                     uitslagen_week = w
                     break
             except Exception as e:
-                print(f"  ⚠️  Fout: {e}")
+                print(f"  ⚠️  {e}")
 
-        # --- Programma: eerstvolgende toekomstige week met planned wedstrijden ---
-        for w in toekomstig:
-            url = week_url(w)
-            print(f"\nProgramma — week {w['week']} ({w['label']}): {url}")
+        # --- Programma: vooruitlopend door toekomstige weken ---
+        print("\n=== PROGRAMMA (week-URLs) ===")
+        for w in toekomstig[:4]:
             try:
-                games   = load_page(page, url)
+                games   = load(page, f"{BASE_URL}?year={w['year']}&week={w['week']}")
                 planned = [g for g in games if not g["gespeeld"]]
-                print(f"  → {len(games)} wedstrijden geladen, {len(planned)} gepland")
                 if planned:
                     programma      = sorted(planned, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
                     programma_week = w
                     break
             except Exception as e:
-                print(f"  ⚠️  Fout: {e}")
+                print(f"  ⚠️  {e}")
+
+        # --- Fallback: als week-URLs geen programma geven, standaard URL proberen ---
+        if not programma:
+            print("\n=== PROGRAMMA FALLBACK (standaard URL) ===")
+            try:
+                games   = load(page, BASE_URL)
+                planned = [g for g in games if not g["gespeeld"]]
+                if planned:
+                    programma      = sorted(planned, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
+                    programma_week = {"label": "automatisch", "week": None, "year": None}
+                    print(f"  → Fallback gelukt: {len(programma)} wedstrijden")
+            except Exception as e:
+                print(f"  ⚠️  {e}")
 
         browser.close()
 
-    # Debug output
     print(f"\n--- Uitslagen ({len(uitslagen)}) ---")
     for u in uitslagen:
         print(f"  {u['datum']} {u['tijdstip']}  "
