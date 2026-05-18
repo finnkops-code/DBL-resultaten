@@ -2,8 +2,8 @@ name: DBL Schedule Scraper
 
 on:
   schedule:
-    - cron: '0 * * * *'     # elk uur (pikt live scores en programmawijzigingen op)
-    - cron: '0 22 * * 5'    # vrijdagavond 23:00 NL (na avondwedstrijden)
+    - cron: '0 * * * *'     # elk uur
+    - cron: '0 22 * * 5'    # vrijdagavond 23:00 NL
     - cron: '0 17 * * 6'    # zaterdagmiddag 18:00 NL
     - cron: '0 22 * * 6'    # zaterdagavond 23:00 NL
     - cron: '0 16 * * 0'    # zondagmiddag 17:00 NL
@@ -29,11 +29,8 @@ jobs:
           pip install playwright
           playwright install chromium --with-deps
 
-      - name: Uitslagen scrapen
-        run: python scraper_uitslagen.py
-
-      - name: Programma scrapen
-        run: python scraper_programma.py
+      - name: Scraper uitvoeren
+        run: python scraper.py
 
       - name: JSON committen
         run: |
