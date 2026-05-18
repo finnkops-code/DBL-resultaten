@@ -20,7 +20,7 @@ WEEKS = [
 
 DIVISION_MAP = {
     "Reguläre Saison Nord": "Nord",
-    "Reguläre Saison Süd": "Süd",
+    "Reguläre Saison Süd":  "Süd",
     "Zwischenphase":        "Zwischenphase",
     "Playoff":              "Playoff",
 }
@@ -43,14 +43,10 @@ def fetch_html(url):
 
 
 def parse_date(date_str):
-    """
-    Parset een Duitse datum zoals 'Freitag, 29. Mai 2026'
-    naar een datetime.date object.
-    """
-    m = re.search(
-        r"(\d+)\.\s+(\w+)\s+(\d{4})",
-        date_str
-    )
+    """Parset 'Freitag, 29. Mai 2026' naar een date object."""
+    if not date_str:
+        return None
+    m = re.search(r"(\d+)\.\s+(\w+)\s+(\d{4})", date_str)
     if not m:
         return None
     day   = int(m.group(1))
@@ -66,7 +62,7 @@ def parse_date(date_str):
 
 def parse_score(text):
     """Geeft None terug voor streepjes, anders het getal."""
-    text = text.strip()
+    text = str(text).strip()
     if text in ("--", "-", "", "?"):
         return None
     try:
@@ -95,7 +91,10 @@ def speelweek_bounds():
 
 
 def scrape_week(week, year):
-    """Scrapt één speelweek van baseball.de en geeft een lijst van games terug."""
+    """
+    Scrapt één speelweek van baseball.de.
+    Deduplicatie per week via seen-set op thuis+uit+datum+tijd.
+    """
     url = f"{BASE_URL}?year={year}&week={week}"
     print(f"  Ophalen: {url}")
     try:
@@ -105,55 +104,91 @@ def scrape_week(week, year):
         return []
 
     games = []
+    seen  = set()
+
+    # Splits HTML in secties per divisie-label
+    sections = re.split(
+        r'(Reguläre Saison Nord|Reguläre Saison Süd|Zwischenphase|Playoff)',
+        html
+    )
+
     current_division = None
-    current_date_str = None
 
-    # Zoek alle logo-links — elke wedstrijd heeft er twee (away, home)
-    logo_pattern = re.compile(
-        r'href="/saison/vereine/detail/[^"]*"[^>]*>.*?<img[^>]+alt="([^"]+) Logo"',
-        re.DOTALL
-    )
-    logos = logo_pattern.findall(html)
-
-    # Splits de HTML in blokken per wedstrijd via tijdstip-patroon
-    # Elk wedstrijdblok bevat: divisie-label, datum, tijd, locatie, teams, score
-    block_pattern = re.compile(
-        r'(Reguläre Saison \w+|Zwischenphase|Playoff).*?'
-        r'((?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag),\s+\d+\.\s+\w+\s+\d{4}).*?'
-        r'(\d{2}:\d{2})\s*Uhr,\s*([^\n<]+?)\s*(?:<|\n).*?'
-        r'alt="([^"]+) Logo".*?'
-        r'(\d+|--)\s*:\s*(\d+|--).*?'
-        r'alt="([^"]+) Logo"',
-        re.DOTALL
-    )
-
-    seen = set()
-
-    for m in block_pattern.finditer(html):
-        division_raw = m.group(1).strip()
-        date_str     = m.group(2).strip()
-        time_str     = m.group(3).strip()
-        location     = m.group(4).strip()
-        away_team    = m.group(5).strip()
-        score_away   = parse_score(m.group(6))
-        score_home   = parse_score(m.group(7))
-        home_team    = m.group(8).strip()
-
-        division = None
+    for section in sections:
+        # Divisie-header?
+        stripped = section.strip()
+        matched_div = False
         for key, val in DIVISION_MAP.items():
-            if key in division_raw:
-                division = val
+            if stripped == key:
+                current_division = val
+                matched_div = True
                 break
 
+        if not matched_div:
+            # Inhoudssectie — zoek wedstrijden
+            found = parse_games_from_section(section, current_division, week, year, seen)
+            games.extend(found)
+
+    # Fallback als niets gevonden
+    if not games:
+        print(f"  ⚠️  Primaire parser leeg, probeer fallback...")
+        games = scrape_week_fallback(html, week, year)
+
+    return games
+
+
+def parse_games_from_section(html, division, week, year, seen):
+    """Zoekt wedstrijden in een HTML-sectie met één divisie."""
+    games = []
+
+    logo_re  = re.compile(r'alt="([^"]+) Logo"')
+    time_re  = re.compile(r'(\d{2}:\d{2})\s*Uhr,\s*([^\n<]{2,60}?)(?:\s*<|\s*\n)')
+    score_re = re.compile(r'(?<!\d)(\d{1,2}|--)\s*:\s*(\d{1,2}|--)(?!\d)')
+    date_re  = re.compile(
+        r'(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag),'
+        r'\s+\d+\.\s+\w+\s+\d{4}'
+    )
+
+    logos  = list(logo_re.finditer(html))
+    times  = time_re.findall(html)
+    scores = score_re.findall(html)
+    dates  = date_re.findall(html)
+
+    pairs = len(logos) // 2
+
+    for i in range(pairs):
+        away_match = logos[i * 2]
+        home_match = logos[i * 2 + 1]
+
+        away_team = away_match.group(1).strip()
+        home_team = home_match.group(1).strip()
+
+        time_str = times[i][0].strip() if i < len(times) else None
+        location = times[i][1].strip()  if i < len(times) else None
+        date_str = dates[i]             if i < len(dates) else None
+
+        # Zoek score in het blok rondom de twee logo-posities
+        block = html[max(0, away_match.start() - 300):home_match.end() + 300]
+        score_m  = score_re.search(block)
+        raw_away = score_m.group(1) if score_m else None
+        raw_home = score_m.group(2) if score_m else None
+
+        score_away = parse_score(raw_away) if raw_away else None
+        score_home = parse_score(raw_home) if raw_home else None
+
+        is_live = "LIVE" in block
+
+        # Gespeeld = er zijn numerieke scores EN het is niet een live-wedstrijd
+        # waarbij de scores 0-0 zijn (dat zijn streepjes die nog geladen worden)
+        gespeeld = (
+            score_away is not None
+            and score_home is not None
+            and not (is_live and score_away == 0 and score_home == 0)
+        )
+
         game_date = parse_date(date_str)
-        is_played = score_home is not None and score_away is not None
-        is_live   = False
 
-        # Live check: score aanwezig maar "LIVE" in de buurt van dit blok
-        if is_played and "LIVE" in m.group(0):
-            is_live = True
-
-        key = (away_team, home_team, date_str, time_str)
+        key = (away_team, home_team, str(game_date), time_str)
         if key in seen:
             continue
         seen.add(key)
@@ -166,61 +201,54 @@ def scrape_week(week, year):
             "tijdstip":    time_str,
             "thuis":       home_team,
             "uit":         away_team,
-            "score_thuis": score_home if is_played else None,
-            "score_uit":   score_away if is_played else None,
+            "score_thuis": score_home if gespeeld else None,
+            "score_uit":   score_away if gespeeld else None,
             "locatie":     location,
             "divisie":     division,
-            "gespeeld":    is_played,
+            "gespeeld":    gespeeld,
             "live":        is_live,
         })
-
-    # Fallback als de regex-blokken niets opleveren
-    if not games:
-        games = scrape_week_fallback(html, week, year)
 
     return games
 
 
 def scrape_week_fallback(html, week, year):
-    """
-    Vereenvoudigde fallback: koppelt logo-paren aan tijd/score via positie in de HTML.
-    """
-    games = []
+    """Vereenvoudigde fallback parser zonder divisie-splitsing."""
+    games  = []
+    seen   = set()
 
     logo_re  = re.compile(r'alt="([^"]+) Logo"')
-    time_re  = re.compile(r'(\d{2}:\d{2})\s*Uhr,\s*([^\n<]{2,50})')
-    score_re = re.compile(r'(\d+|--)\s*:\s*(\d+|--)')
+    time_re  = re.compile(r'(\d{2}:\d{2})\s*Uhr,\s*([^\n<]{2,60}?)(?:\s*<|\s*\n)')
+    score_re = re.compile(r'(?<!\d)(\d{1,2}|--)\s*:\s*(\d{1,2}|--)(?!\d)')
     date_re  = re.compile(
         r'(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag),'
         r'\s+\d+\.\s+\w+\s+\d{4}'
     )
-    div_re   = re.compile(r'Reguläre Saison (Nord|Süd)|Zwischenphase|Playoff')
 
-    logos   = logo_re.findall(html)
-    times   = time_re.findall(html)
-    scores  = score_re.findall(html)
-    dates   = date_re.findall(html)
-    divs    = div_re.findall(html)
+    logos  = logo_re.findall(html)
+    times  = time_re.findall(html)
+    scores = score_re.findall(html)
+    dates  = date_re.findall(html)
 
     pairs = len(logos) // 2
-    seen  = set()
 
     for i in range(pairs):
         away = logos[i * 2]
         home = logos[i * 2 + 1]
 
-        time_str  = times[i][0]   if i < len(times)  else None
-        location  = times[i][1]   if i < len(times)  else None
-        date_str  = dates[i]      if i < len(dates)   else None
-        div       = divs[i]       if i < len(divs)    else None
+        time_str = times[i][0].strip() if i < len(times) else None
+        location = times[i][1].strip()  if i < len(times) else None
+        date_str = dates[i]             if i < len(dates) else None
 
-        s_away = parse_score(scores[i][0]) if i < len(scores) else None
-        s_home = parse_score(scores[i][1]) if i < len(scores) else None
-        is_played = s_home is not None and s_away is not None
+        raw_away = scores[i][0] if i < len(scores) else None
+        raw_home = scores[i][1] if i < len(scores) else None
 
-        game_date = parse_date(date_str) if date_str else None
+        score_away = parse_score(raw_away) if raw_away else None
+        score_home = parse_score(raw_home) if raw_home else None
+        gespeeld   = score_away is not None and score_home is not None
+        game_date  = parse_date(date_str)
 
-        key = (away, home, date_str, time_str)
+        key = (away, home, str(game_date), time_str)
         if key in seen:
             continue
         seen.add(key)
@@ -233,11 +261,11 @@ def scrape_week_fallback(html, week, year):
             "tijdstip":    time_str,
             "thuis":       home,
             "uit":         away,
-            "score_thuis": s_home if is_played else None,
-            "score_uit":   s_away if is_played else None,
+            "score_thuis": score_home if gespeeld else None,
+            "score_uit":   score_away if gespeeld else None,
             "locatie":     location,
-            "divisie":     div,
-            "gespeeld":    is_played,
+            "divisie":     None,
+            "gespeeld":    gespeeld,
             "live":        False,
         })
 
@@ -257,51 +285,80 @@ def main():
         print(f"\nWeek {w['week']}/{w['year']} ({w['label']})...")
         games = scrape_week(w["week"], w["year"])
         all_games.extend(games)
-        print(f"  → {len(games)} wedstrijden gevonden")
+        played   = sum(1 for g in games if g["gespeeld"])
+        upcoming = sum(1 for g in games if not g["gespeeld"])
+        print(f"  → {len(games)} wedstrijden ({played} gespeeld, {upcoming} gepland)")
 
-    # Uitslagen: gespeeld in de meest recente speelweek
+    # Globale deduplicatie — zelfde wedstrijd kan op meerdere week-URLs staan
+    seen_global  = set()
+    unique_games = []
+    for g in all_games:
+        key = (g["thuis"], g["uit"], g["datum"], g["tijdstip"])
+        if key not in seen_global:
+            seen_global.add(key)
+            unique_games.append(g)
+
+    print(f"\nNa deduplicatie: {len(unique_games)} unieke wedstrijden (was {len(all_games)})")
+
+    # Uitslagen: gespeeld in de meest recente speelweek (vr–zo)
     uitslagen = [
-        g for g in all_games
+        g for g in unique_games
         if g["gespeeld"] and g["datum"]
         and friday <= datetime.strptime(g["datum"], "%Y-%m-%d").date() <= sunday
     ]
 
-    # Programma: toekomstige wedstrijden, max 10
+    # Programma: toekomstige wedstrijden, max 15
     programma = sorted(
-        [g for g in all_games if not g["gespeeld"] and g["datum"]
-         and datetime.strptime(g["datum"], "%Y-%m-%d").date() > today],
+        [
+            g for g in unique_games
+            if not g["gespeeld"] and g["datum"]
+            and datetime.strptime(g["datum"], "%Y-%m-%d").date() > today
+        ],
         key=lambda g: (g["datum"], g["tijdstip"] or "")
-    )[:10]
+    )[:15]
 
     uitslagen.sort(key=lambda g: (g["datum"], g["tijdstip"] or ""))
 
-    # Debug output
-    print(f"\nGespeelde wedstrijden in speelweek ({friday} – {sunday}):")
+    # Debug
+    print(f"\nUitslagen ({friday} – {sunday}):")
     if uitslagen:
         for u in uitslagen:
-            print(f"  {u['datum']} {u['tijdstip']}  {u['uit']} {u['score_uit']}–{u['score_thuis']} {u['thuis']}  [{u['divisie']}]")
+            print(f"  {u['datum']} {u['tijdstip']}  "
+                  f"{u['uit']} {u['score_uit']}–{u['score_thuis']} {u['thuis']}  [{u['divisie']}]")
     else:
-        print("  ⚠️  Geen uitslagen gevonden voor deze speelweek")
+        print("  ⚠️  Geen uitslagen gevonden voor deze periode")
+        periode = [
+            g for g in unique_games if g["datum"]
+            and friday <= datetime.strptime(g["datum"], "%Y-%m-%d").date() <= sunday
+        ]
+        for g in periode:
+            print(f"    gespeeld={g['gespeeld']} live={g['live']} "
+                  f"score={g['score_uit']}-{g['score_thuis']} "
+                  f"{g['uit']} @ {g['thuis']}")
+
+    print(f"\nProgramma (eerstvolgende {len(programma)}):")
+    for p in programma:
+        print(f"  {p['datum']} {p['tijdstip']}  {p['uit']} @ {p['thuis']}  [{p['divisie']}]")
 
     output = {
-        "bijgewerkt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "bron": BASE_URL,
+        "bijgewerkt":     datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "bron":           BASE_URL,
         "speelweek": {
             "van": str(friday),
             "tot": str(sunday),
         },
-        "uitslagen": uitslagen,
-        "programma": programma,
-        "alle_wedstrijden": all_games,
+        "uitslagen":      uitslagen,
+        "programma":      programma,
+        "alle_wedstrijden": unique_games,
     }
 
     with open("schedule.json", "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
     print(f"\n✅ schedule.json opgeslagen")
+    print(f"   Unieke wedstrijden totaal : {len(unique_games)}")
     print(f"   Uitslagen deze speelweek  : {len(uitslagen)}")
     print(f"   Aankomende wedstrijden    : {len(programma)}")
-    print(f"   Totaal alle wedstrijden   : {len(all_games)}")
 
 
 if __name__ == "__main__":
