@@ -1,7 +1,16 @@
+"""
+DBL Schedule Scraper — gebruikt Playwright (headless Chrome)
+omdat baseball.de Python-requests met 403 blokkeert.
+
+Installatie (eenmalig):
+    pip install playwright
+    playwright install chromium
+"""
+
 import json
 import re
-import urllib.request
 from datetime import datetime, timezone, timedelta
+from playwright.sync_api import sync_playwright
 
 BASE_URL = "https://www.baseball.de/saison/spielplaene"
 
@@ -18,35 +27,24 @@ WEEKS = [
     {"label": "19–21 jun", "week": 25, "year": 2026},
 ]
 
-DIVISION_MAP = {
-    "Reguläre Saison Nord": "Nord",
-    "Reguläre Saison Süd":  "Süd",
-    "Zwischenphase":        "Zwischenphase",
-    "Playoff":              "Playoff",
-}
-
 MAANDEN_DE = {
     "Januar": 1, "Februar": 2, "März": 3, "April": 4,
     "Mai": 5, "Juni": 6, "Juli": 7, "August": 8,
     "September": 9, "Oktober": 10, "November": 11, "Dezember": 12,
 }
 
-
-def fetch_html(url):
-    req = urllib.request.Request(url, headers={
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml",
-        "Accept-Language": "de-DE,de;q=0.9",
-    })
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        return resp.read().decode("utf-8")
+DIVISION_KEYWORDS = {
+    "Nord": "Nord",
+    "Süd": "Süd",
+    "Zwischenphase": "Zwischenphase",
+    "Playoff": "Playoff",
+}
 
 
 def parse_date(date_str):
-    """Parset 'Freitag, 29. Mai 2026' naar een date object."""
     if not date_str:
         return None
-    m = re.search(r"(\d+)\.\s+(\w+)\s+(\d{4})", date_str)
+    m = re.search(r"(\d+)\.\s+(\w+)\s+(\d{4})", str(date_str))
     if not m:
         return None
     day   = int(m.group(1))
@@ -61,9 +59,8 @@ def parse_date(date_str):
 
 
 def parse_score(text):
-    """Geeft None terug voor streepjes, anders het getal."""
     text = str(text).strip()
-    if text in ("--", "-", "", "?"):
+    if text in ("--", "-", "", "?", "None"):
         return None
     try:
         return int(text)
@@ -72,121 +69,146 @@ def parse_score(text):
 
 
 def speelweek_bounds():
-    """
-    Geeft de vrijdag en zondag van de meest recente DBL-speelweek.
-    DBL speelt op vrijdag, zaterdag en zondag.
-
-    Logica:
-    - Ma t/m do → vorige week vr t/m zo
-    - Vr t/m zo → deze week vr t/m zo
-    """
     now = datetime.now(timezone.utc) + timedelta(hours=2)
     today = now.date()
-    weekday = today.weekday()  # 0=ma … 6=zo
-
+    weekday = today.weekday()
     days_since_friday = (weekday - 4) % 7
     friday = today - timedelta(days=days_since_friday)
     sunday = friday + timedelta(days=2)
     return friday, sunday
 
 
-def scrape_week(week, year):
-    """
-    Scrapt één speelweek van baseball.de.
-    Deduplicatie per week via seen-set op thuis+uit+datum+tijd.
-    """
+def scrape_week_playwright(page, week, year):
+    """Scrapt één speelweek via Playwright en extraheert wedstrijden uit de DOM."""
     url = f"{BASE_URL}?year={year}&week={week}"
-    print(f"  Ophalen: {url}")
+    print(f"  Laden: {url}")
+
     try:
-        html = fetch_html(url)
+        page.goto(url, wait_until="networkidle", timeout=30000)
     except Exception as e:
-        print(f"  ⚠️  Fout: {e}")
+        print(f"  ⚠️  Timeout/fout: {e}")
         return []
+
+    # Wacht tot wedstrijdkaarten geladen zijn
+    try:
+        page.wait_for_selector("img[alt*='Logo']", timeout=10000)
+    except Exception:
+        print(f"  ⚠️  Geen logo's gevonden na wachten")
 
     games = []
     seen  = set()
 
-    # Splits HTML in secties per divisie-label
-    sections = re.split(
-        r'(Reguläre Saison Nord|Reguläre Saison Süd|Zwischenphase|Playoff)',
-        html
-    )
+    # Extraheer wedstrijddata via JavaScript in de browser
+    # Dit loopt in de context van de geladen pagina
+    raw = page.evaluate("""
+    () => {
+        const results = [];
 
-    current_division = None
+        // Zoek alle wedstrijdcontainers
+        // De site gebruikt waarschijnlijk cards/rows per wedstrijd
+        // We zoeken naar elementen met twee team-logo's
 
-    for section in sections:
-        # Divisie-header?
-        stripped = section.strip()
-        matched_div = False
-        for key, val in DIVISION_MAP.items():
-            if stripped == key:
-                current_division = val
-                matched_div = True
-                break
+        const allImgs = Array.from(document.querySelectorAll('img[alt]'))
+            .filter(img => img.alt.includes('Logo'));
 
-        if not matched_div:
-            # Inhoudssectie — zoek wedstrijden
-            found = parse_games_from_section(section, current_division, week, year, seen)
-            games.extend(found)
+        // Groepeer logo's per 2 (away, home)
+        for (let i = 0; i + 1 < allImgs.length; i += 2) {
+            const awayImg = allImgs[i];
+            const homeImg = allImgs[i + 1];
 
-    # Fallback als niets gevonden
-    if not games:
-        print(f"  ⚠️  Primaire parser leeg, probeer fallback...")
-        games = scrape_week_fallback(html, week, year)
+            const awayTeam = awayImg.alt.replace(' Logo', '').trim();
+            const homeTeam = homeImg.alt.replace(' Logo', '').trim();
 
-    return games
+            // Zoek de gemeenschappelijke container
+            let container = awayImg.parentElement;
+            for (let depth = 0; depth < 8; depth++) {
+                if (!container) break;
+                const text = container.innerText || '';
+                // Container moet beide teamnamen bevatten
+                if (text.includes(awayTeam) && text.includes(homeTeam)) break;
+                container = container.parentElement;
+            }
 
+            const text = container ? (container.innerText || '') : '';
 
-def parse_games_from_section(html, division, week, year, seen):
-    """Zoekt wedstrijden in een HTML-sectie met één divisie."""
-    games = []
+            // Tijd
+            const timeMatch = text.match(/(\\d{2}:\\d{2})\\s*Uhr/);
+            const time = timeMatch ? timeMatch[1] : null;
 
-    logo_re  = re.compile(r'alt="([^"]+) Logo"')
-    time_re  = re.compile(r'(\d{2}:\d{2})\s*Uhr,\s*([^\n<]{2,60}?)(?:\s*<|\s*\n)')
-    score_re = re.compile(r'(?<!\d)(\d{1,2}|--)\s*:\s*(\d{1,2}|--)(?!\d)')
-    date_re  = re.compile(
-        r'(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag),'
-        r'\s+\d+\.\s+\w+\s+\d{4}'
-    )
+            // Locatie (na "Uhr,")
+            const locMatch = text.match(/Uhr,\\s*([^\\n]+)/);
+            const location = locMatch ? locMatch[1].trim().split('\\n')[0].trim() : null;
 
-    logos  = list(logo_re.finditer(html))
-    times  = time_re.findall(html)
-    scores = score_re.findall(html)
-    dates  = date_re.findall(html)
+            // Datum
+            const dateMatch = text.match(
+                /(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag),\\s+\\d+\\.\\s+\\w+\\s+\\d{4}/
+            );
+            const dateStr = dateMatch ? dateMatch[0] : null;
 
-    pairs = len(logos) // 2
+            // Score — zoek op patroon "getal : getal" of "-- : --"
+            const scoreMatch = text.match(/(?<![\\d])(\\d{1,2}|--)\\s*:\\s*(\\d{1,2}|--)(?![\\d])/);
+            const scoreAway = scoreMatch ? scoreMatch[1] : null;
+            const scoreHome = scoreMatch ? scoreMatch[2] : null;
 
-    for i in range(pairs):
-        away_match = logos[i * 2]
-        home_match = logos[i * 2 + 1]
+            // Divisie — zoek in tekst of dichtstbijzijnde header
+            let division = null;
+            const divMatches = [
+                ['Reguläre Saison Nord', 'Nord'],
+                ['Reguläre Saison Süd', 'Süd'],
+                ['Zwischenphase', 'Zwischenphase'],
+                ['Playoff', 'Playoff'],
+            ];
+            for (const [keyword, val] of divMatches) {
+                if (text.includes(keyword)) { division = val; break; }
+            }
 
-        away_team = away_match.group(1).strip()
-        home_team = home_match.group(1).strip()
+            // Zoek ook in voorgaande siblings/parents voor divisie-header
+            if (!division && container) {
+                let el = container.previousElementSibling;
+                for (let d = 0; d < 5 && el; d++) {
+                    const t = el.innerText || '';
+                    for (const [keyword, val] of divMatches) {
+                        if (t.includes(keyword)) { division = val; break; }
+                    }
+                    if (division) break;
+                    el = el.previousElementSibling;
+                }
+            }
 
-        time_str = times[i][0].strip() if i < len(times) else None
-        location = times[i][1].strip()  if i < len(times) else None
-        date_str = dates[i]             if i < len(dates) else None
+            const isLive = text.includes('LIVE');
 
-        # Zoek score in het blok rondom de twee logo-posities
-        block = html[max(0, away_match.start() - 300):home_match.end() + 300]
-        score_m  = score_re.search(block)
-        raw_away = score_m.group(1) if score_m else None
-        raw_home = score_m.group(2) if score_m else None
+            results.push({
+                awayTeam, homeTeam, time, location, dateStr,
+                scoreAway, scoreHome, division, isLive,
+                rawText: text.substring(0, 200)
+            });
+        }
 
-        score_away = parse_score(raw_away) if raw_away else None
-        score_home = parse_score(raw_home) if raw_home else None
+        return results;
+    }
+    """)
 
-        is_live = "LIVE" in block
+    for r in raw:
+        away_team = r.get("awayTeam", "")
+        home_team = r.get("homeTeam", "")
+        if not away_team or not home_team:
+            continue
 
-        # Gespeeld = er zijn numerieke scores EN het is niet een live-wedstrijd
-        # waarbij de scores 0-0 zijn (dat zijn streepjes die nog geladen worden)
+        time_str   = r.get("time")
+        location   = r.get("location")
+        date_str   = r.get("dateStr")
+        score_away = parse_score(r.get("scoreAway"))
+        score_home = parse_score(r.get("scoreHome"))
+        division   = r.get("division")
+        is_live    = r.get("isLive", False)
+        game_date  = parse_date(date_str)
+
+        # Gespeeld als er echte scores zijn en het niet puur live 0-0 is
         gespeeld = (
             score_away is not None
             and score_home is not None
             and not (is_live and score_away == 0 and score_home == 0)
         )
-
-        game_date = parse_date(date_str)
 
         key = (away_team, home_team, str(game_date), time_str)
         if key in seen:
@@ -212,84 +234,38 @@ def parse_games_from_section(html, division, week, year, seen):
     return games
 
 
-def scrape_week_fallback(html, week, year):
-    """Vereenvoudigde fallback parser zonder divisie-splitsing."""
-    games  = []
-    seen   = set()
-
-    logo_re  = re.compile(r'alt="([^"]+) Logo"')
-    time_re  = re.compile(r'(\d{2}:\d{2})\s*Uhr,\s*([^\n<]{2,60}?)(?:\s*<|\s*\n)')
-    score_re = re.compile(r'(?<!\d)(\d{1,2}|--)\s*:\s*(\d{1,2}|--)(?!\d)')
-    date_re  = re.compile(
-        r'(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag),'
-        r'\s+\d+\.\s+\w+\s+\d{4}'
-    )
-
-    logos  = logo_re.findall(html)
-    times  = time_re.findall(html)
-    scores = score_re.findall(html)
-    dates  = date_re.findall(html)
-
-    pairs = len(logos) // 2
-
-    for i in range(pairs):
-        away = logos[i * 2]
-        home = logos[i * 2 + 1]
-
-        time_str = times[i][0].strip() if i < len(times) else None
-        location = times[i][1].strip()  if i < len(times) else None
-        date_str = dates[i]             if i < len(dates) else None
-
-        raw_away = scores[i][0] if i < len(scores) else None
-        raw_home = scores[i][1] if i < len(scores) else None
-
-        score_away = parse_score(raw_away) if raw_away else None
-        score_home = parse_score(raw_home) if raw_home else None
-        gespeeld   = score_away is not None and score_home is not None
-        game_date  = parse_date(date_str)
-
-        key = (away, home, str(game_date), time_str)
-        if key in seen:
-            continue
-        seen.add(key)
-
-        games.append({
-            "week":        week,
-            "year":        year,
-            "datum":       str(game_date) if game_date else None,
-            "datum_str":   date_str,
-            "tijdstip":    time_str,
-            "thuis":       home,
-            "uit":         away,
-            "score_thuis": score_home if gespeeld else None,
-            "score_uit":   score_away if gespeeld else None,
-            "locatie":     location,
-            "divisie":     None,
-            "gespeeld":    gespeeld,
-            "live":        False,
-        })
-
-    return games
-
-
 def main():
-    print(f"DBL scraper gestart — {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
+    print(f"DBL scraper (Playwright) gestart — {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
 
     friday, sunday = speelweek_bounds()
     today = (datetime.now(timezone.utc) + timedelta(hours=2)).date()
-    print(f"Meest recente speelweek: {friday} (vr) t/m {sunday} (zo)")
+    print(f"Meest recente speelweek: {friday} (vr) t/m {sunday} (zo)\n")
 
     all_games = []
 
-    for w in WEEKS:
-        print(f"\nWeek {w['week']}/{w['year']} ({w['label']})...")
-        games = scrape_week(w["week"], w["year"])
-        all_games.extend(games)
-        played   = sum(1 for g in games if g["gespeeld"])
-        upcoming = sum(1 for g in games if not g["gespeeld"])
-        print(f"  → {len(games)} wedstrijden ({played} gespeeld, {upcoming} gepland)")
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context(
+            user_agent=(
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+            ),
+            locale="de-DE",
+            viewport={"width": 1280, "height": 800},
+        )
+        page = context.new_page()
 
-    # Globale deduplicatie — zelfde wedstrijd kan op meerdere week-URLs staan
+        for w in WEEKS:
+            print(f"Week {w['week']}/{w['year']} ({w['label']})...")
+            games = scrape_week_playwright(page, w["week"], w["year"])
+            all_games.extend(games)
+            played   = sum(1 for g in games if g["gespeeld"])
+            upcoming = sum(1 for g in games if not g["gespeeld"])
+            print(f"  → {len(games)} wedstrijden ({played} gespeeld, {upcoming} gepland)\n")
+
+        browser.close()
+
+    # Globale deduplicatie
     seen_global  = set()
     unique_games = []
     for g in all_games:
@@ -298,9 +274,9 @@ def main():
             seen_global.add(key)
             unique_games.append(g)
 
-    print(f"\nNa deduplicatie: {len(unique_games)} unieke wedstrijden (was {len(all_games)})")
+    print(f"Na deduplicatie: {len(unique_games)} unieke wedstrijden (was {len(all_games)})")
 
-    # Uitslagen: gespeeld in de meest recente speelweek (vr–zo)
+    # Uitslagen: gespeeld in de meest recente speelweek
     uitslagen = [
         g for g in unique_games
         if g["gespeeld"] and g["datum"]
@@ -326,7 +302,7 @@ def main():
             print(f"  {u['datum']} {u['tijdstip']}  "
                   f"{u['uit']} {u['score_uit']}–{u['score_thuis']} {u['thuis']}  [{u['divisie']}]")
     else:
-        print("  ⚠️  Geen uitslagen gevonden voor deze periode")
+        print("  ⚠️  Geen uitslagen — wedstrijden nog niet gespeeld of buiten speelweek")
         periode = [
             g for g in unique_games if g["datum"]
             and friday <= datetime.strptime(g["datum"], "%Y-%m-%d").date() <= sunday
@@ -341,14 +317,14 @@ def main():
         print(f"  {p['datum']} {p['tijdstip']}  {p['uit']} @ {p['thuis']}  [{p['divisie']}]")
 
     output = {
-        "bijgewerkt":     datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "bron":           BASE_URL,
+        "bijgewerkt":       datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "bron":             BASE_URL,
         "speelweek": {
             "van": str(friday),
             "tot": str(sunday),
         },
-        "uitslagen":      uitslagen,
-        "programma":      programma,
+        "uitslagen":        uitslagen,
+        "programma":        programma,
         "alle_wedstrijden": unique_games,
     }
 
