@@ -1,36 +1,27 @@
 """
-DBL Programma Scraper
-Loopt vooruit door toekomstige week-URLs totdat planned wedstrijden gevonden worden.
-Schrijft alleen "programma" in schedule.json.
+DBL Schedule Scraper
+Haalt aankomende geplande wedstrijden op van baseball.de
+en schrijft deze naar schedule.json zonder bestaande data te verwijderen.
 """
 
 import json
 import os
 import re
 import datetime as dt
-from datetime import timezone, timedelta
+from datetime import timezone
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
 BASE_URL = "https://www.baseball.de/saison/spielplaene"
 JSON_FILE = "schedule.json"
 
-WEEKS = [
-    {"label": "10–12 apr", "week": 14, "year": 2026},
-    {"label": "17–19 apr", "week": 16, "year": 2026},
-    {"label": "24–26 apr", "week": 17, "year": 2026},
-    {"label": "01–03 mei", "week": 18, "year": 2026},
-    {"label": "08–10 mei", "week": 19, "year": 2026},
-    {"label": "15–17 mei", "week": 20, "year": 2026},
-    {"label": "29–31 mei", "week": 22, "year": 2026},
-    {"label": "05–07 jun", "week": 23, "year": 2026},
-    {"label": "12–14 jun", "week": 24, "year": 2026},
-    {"label": "19–21 jun", "week": 25, "year": 2026},
-]
+MAX_WEEKS_AHEAD = 16
+MAX_GAMES = 20
 
 MAANDEN_DE = {
     "Januar": 1,
     "Februar": 2,
     "März": 3,
+    "Maerz": 3,
     "April": 4,
     "Mai": 5,
     "Juni": 6,
@@ -42,190 +33,177 @@ MAANDEN_DE = {
     "Dezember": 12,
 }
 
+
 EXTRACT_JS = """
 () => {
-    const results = [];
+    const games = [];
 
-    document.querySelectorAll('div.game').forEach(card => {
-        const state = card.getAttribute('data-state') || '';
-        const dataStart = card.getAttribute('data-start');
-        const timestamp = dataStart ? parseInt(dataStart) * 1000 : null;
+    document.querySelectorAll("div.game").forEach(card => {
+        const state = card.getAttribute("data-state") || "";
+        const dataStart = card.getAttribute("data-start");
 
-        const badgeEl = card.querySelector('p.game-badge');
-        let division = null;
+        const badge = card.querySelector("p.game-badge")?.textContent.trim() || null;
+        const dateStr = card.querySelector("p.game-header-date")?.textContent.trim() || null;
+        const timeText = card.querySelector("p.game-header-time")?.textContent.trim() || null;
 
-        if (badgeEl) {
-            const t = badgeEl.textContent.trim();
-
-            if (t.includes('Nord')) division = 'Nord';
-            else if (t.includes('Süd')) division = 'Süd';
-            else if (t.includes('Zwischen')) division = 'Zwischenphase';
-            else if (t.includes('Playoff')) division = 'Playoff';
-        }
-
-        const dateEl = card.querySelector('p.game-header-date');
-        const dateStr = dateEl ? dateEl.textContent.trim() : null;
-
-        const timeEl = card.querySelector('p.game-header-time');
         let time = null;
         let location = null;
 
-        if (timeEl) {
-            const m = timeEl.textContent.trim().match(/(\\d{2}:\\d{2})\\s*Uhr,?\\s*(.*)/);
-
-            if (m) {
-                time = m[1];
-                location = m[2].trim() || null;
+        if (timeText) {
+            const match = timeText.match(/(\\d{2}:\\d{2})\\s*Uhr,?\\s*(.*)/);
+            if (match) {
+                time = match[1];
+                location = match[2]?.trim() || null;
             }
         }
 
-        const homeScoreRaw =
-            card.querySelector('span[data-team-score="home"]')?.textContent.trim() || null;
+        const teams = Array.from(card.querySelectorAll("dbl-tooltip[tooltip]"))
+            .map(el => el.getAttribute("tooltip")?.trim())
+            .filter(Boolean);
 
-        const awayScoreRaw =
-            card.querySelector('span[data-team-score="away"]')?.textContent.trim() || null;
+        const homeScoreRaw = card.querySelector('span[data-team-score="home"]')?.textContent.trim() || null;
+        const awayScoreRaw = card.querySelector('span[data-team-score="away"]')?.textContent.trim() || null;
 
-        const tooltips = Array.from(card.querySelectorAll('dbl-tooltip[tooltip]'))
-            .map(el => el.getAttribute('tooltip').trim());
-
-        results.push({
+        games.push({
             state,
-            timestamp,
-            division,
+            dataStart,
+            badge,
             dateStr,
             time,
             location,
-            homeTeam: tooltips[0] || null,
-            awayTeam: tooltips[1] || null,
+            homeTeam: teams[0] || null,
+            awayTeam: teams[1] || null,
             homeScoreRaw,
             awayScoreRaw
         });
     });
 
-    return results;
+    return games;
 }
 """
 
 
-def parse_date_str(s):
-    if not s:
-        return None
-
-    m = re.search(r"(\d+)\.\s+(\w+)\s+(\d{4})", str(s))
-
-    if not m:
-        return None
-
-    month = MAANDEN_DE.get(m.group(2), 0)
-
-    if not month:
-        return None
-
-    try:
-        return dt.datetime(
-            int(m.group(3)),
-            month,
-            int(m.group(1))
-        ).date()
-    except Exception:
-        return None
-
-
-def parse_score(t):
-    if not t or str(t).strip() in ("--", "-", "", "?"):
-        return None
-
-    try:
-        return int(str(t).strip())
-    except Exception:
-        return None
-
-
-def process(raw):
-    games = []
-    seen = set()
-
-    for r in raw:
-        h = r.get("homeTeam")
-        a = r.get("awayTeam")
-
-        if not h or not a:
-            continue
-
-        state = r.get("state", "")
-        date_str = r.get("dateStr")
-        time_str = r.get("time")
-        location = r.get("location")
-        division = r.get("division")
-
-        game_date = parse_date_str(date_str)
-
-        if not game_date and r.get("timestamp"):
-            d = (
-                dt.datetime.fromtimestamp(
-                    r["timestamp"] / 1000,
-                    tz=timezone.utc
-                )
-                + timedelta(hours=2)
-            )
-
-            game_date = d.date()
-
-            if not time_str:
-                time_str = d.strftime("%H:%M")
-
-        gespeeld = state in ("played", "live")
-
-        key = (h, a, str(game_date), time_str)
-
-        if key in seen:
-            continue
-
-        seen.add(key)
-
-        games.append({
-            "datum": str(game_date) if game_date else None,
-            "datum_str": date_str,
-            "tijdstip": time_str,
-            "thuis": h,
-            "uit": a,
-            "score_thuis": parse_score(r.get("homeScoreRaw")) if gespeeld else None,
-            "score_uit": parse_score(r.get("awayScoreRaw")) if gespeeld else None,
-            "locatie": location,
-            "divisie": division,
-            "gespeeld": gespeeld,
-            "live": state == "live",
-        })
-
-    return games
-
-
-def load_existing_json():
-    if not os.path.exists(JSON_FILE):
+def load_json(path):
+    if not os.path.exists(path):
         return {}
 
-    with open(JSON_FILE, encoding="utf-8") as f:
-        try:
+    try:
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
+    except Exception:
+        return {}
+
+
+def save_json(path, data):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def parse_date(date_str, data_start=None):
+    if date_str:
+        match = re.search(r"(\d{1,2})\.\s+([A-Za-zÄÖÜäöüß]+)\s+(\d{4})", date_str)
+
+        if match:
+            day = int(match.group(1))
+            month_name = match.group(2)
+            year = int(match.group(3))
+
+            month = MAANDEN_DE.get(month_name)
+
+            if month:
+                return dt.date(year, month, day)
+
+    if data_start:
+        try:
+            timestamp = int(data_start)
+            return dt.datetime.fromtimestamp(timestamp, tz=timezone.utc).date()
         except Exception:
-            return {}
+            return None
+
+    return None
 
 
-def main():
-    today = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
+def parse_division(badge):
+    if not badge:
+        return None
 
-    # Toekomstige weken: zondag van de speelweek ligt vandaag of in de toekomst.
-    # Hierdoor wordt een speelweek niet al op vrijdag weggefilterd.
-    toekomstig = [
-        w for w in WEEKS
-        if dt.date.fromisocalendar(w["year"], w["week"], 7) >= today
-    ]
+    if "Nord" in badge:
+        return "Nord"
+    if "Süd" in badge or "Sued" in badge:
+        return "Süd"
+    if "Zwischen" in badge:
+        return "Zwischenphase"
+    if "Playoff" in badge:
+        return "Playoff"
 
-    print("Vandaag:", today)
-    print("Toekomstige weken:", toekomstig)
+    return badge
 
-    programma = []
-    programma_week = None
+
+def is_played(game):
+    state = (game.get("state") or "").lower()
+
+    if state in ["played", "live", "finished", "final"]:
+        return True
+
+    home_score = game.get("homeScoreRaw")
+    away_score = game.get("awayScoreRaw")
+
+    if home_score and away_score and home_score not in ["-", "--"] and away_score not in ["-", "--"]:
+        return True
+
+    return False
+
+
+def normalize_game(game):
+    game_date = parse_date(game.get("dateStr"), game.get("dataStart"))
+
+    return {
+        "datum": str(game_date) if game_date else None,
+        "datum_str": game.get("dateStr"),
+        "tijdstip": game.get("time"),
+        "thuis": game.get("homeTeam"),
+        "uit": game.get("awayTeam"),
+        "score_thuis": None,
+        "score_uit": None,
+        "locatie": game.get("location"),
+        "divisie": parse_division(game.get("badge")),
+        "gespeeld": False,
+        "live": False,
+    }
+
+
+def get_iso_weeks_from_today(max_weeks):
+    today = dt.datetime.now(timezone.utc).date()
+    weeks = []
+
+    for i in range(max_weeks):
+        date = today + dt.timedelta(weeks=i)
+        iso = date.isocalendar()
+
+        weeks.append({
+            "year": iso.year,
+            "week": iso.week,
+        })
+
+    unique = []
+    seen = set()
+
+    for week in weeks:
+        key = (week["year"], week["week"])
+
+        if key not in seen:
+            seen.add(key)
+            unique.append(week)
+
+    return unique
+
+
+def scrape_schedule():
+    today = dt.datetime.now(timezone.utc).date()
+    weeks = get_iso_weeks_from_today(MAX_WEEKS_AHEAD)
+
+    all_games = []
+    seen = set()
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -236,59 +214,102 @@ def main():
                 "AppleWebKit/537.36 Chrome/122.0 Safari/537.36"
             ),
             locale="de-DE",
-            viewport={"width": 1280, "height": 800},
+            viewport={"width": 1280, "height": 900},
         )
 
         page = context.new_page()
 
-        for w in toekomstig:
-            url = f"{BASE_URL}?year={w['year']}&week={w['week']}"
+        for week in weeks:
+            url = f"{BASE_URL}?year={week['year']}&week={week['week']}"
             print(f"Laden: {url}")
 
             try:
-                page.goto(url, wait_until="domcontentloaded", timeout=30000)
-                page.wait_for_selector("div.game", timeout=12000)
+                page.goto(url, wait_until="networkidle", timeout=30000)
             except PlaywrightTimeoutError:
-                print("→ Geen wedstrijden gevonden of pagina laadde te traag")
+                print("Pagina timeout, week overgeslagen")
                 continue
 
-            raw = page.evaluate(EXTRACT_JS)
-            games = process(raw)
+            try:
+                page.wait_for_selector("div.game", timeout=8000)
+            except PlaywrightTimeoutError:
+                print("Geen wedstrijden gevonden")
+                continue
 
-            planned = [g for g in games if not g["gespeeld"]]
+            raw_games = page.evaluate(EXTRACT_JS)
+            print(f"Ruwe wedstrijden gevonden: {len(raw_games)}")
 
-            print(f"→ {len(games)} wedstrijden, {len(planned)} gepland")
+            for raw_game in raw_games:
+                if not raw_game.get("homeTeam") or not raw_game.get("awayTeam"):
+                    continue
 
-            if planned:
-                programma = sorted(
-                    planned,
-                    key=lambda g: (g["datum"] or "", g["tijdstip"] or "")
+                if is_played(raw_game):
+                    continue
+
+                normalized = normalize_game(raw_game)
+
+                if not normalized["datum"]:
+                    continue
+
+                game_date = dt.date.fromisoformat(normalized["datum"])
+
+                if game_date < today:
+                    continue
+
+                key = (
+                    normalized["datum"],
+                    normalized["tijdstip"],
+                    normalized["thuis"],
+                    normalized["uit"],
                 )
-                programma_week = w
+
+                if key in seen:
+                    continue
+
+                seen.add(key)
+                all_games.append(normalized)
+
+            if len(all_games) >= MAX_GAMES:
                 break
 
         browser.close()
 
-    print(f"\nProgramma ({len(programma)}):")
-
-    for game in programma:
-        print(
-            f"  {game['datum']} {game['tijdstip']} "
-            f"{game['uit']} @ {game['thuis']}"
+    all_games = sorted(
+        all_games,
+        key=lambda g: (
+            g["datum"] or "9999-99-99",
+            g["tijdstip"] or "99:99",
+            g["thuis"] or "",
         )
-
-    data = load_existing_json()
-
-    data["bijgewerkt_programma"] = dt.datetime.now(timezone.utc).strftime(
-        "%Y-%m-%dT%H:%M:%SZ"
     )
-    data["programma_week"] = programma_week
+
+    return all_games[:MAX_GAMES]
+
+
+def main():
+    programma = scrape_schedule()
+
+    data = load_json(JSON_FILE)
+
+    data["bijgewerkt_programma"] = dt.datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     data["programma"] = programma
 
-    with open(JSON_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    if programma:
+        first_date = programma[0]["datum"]
+        first_iso = dt.date.fromisoformat(first_date).isocalendar()
 
-    print(f"✅ {len(programma)} programma-wedstrijden opgeslagen")
+        data["programma_week"] = {
+            "year": first_iso.year,
+            "week": first_iso.week,
+        }
+    else:
+        data["programma_week"] = None
+
+    save_json(JSON_FILE, data)
+
+    print(f"✅ {len(programma)} aankomende wedstrijden opgeslagen in {JSON_FILE}")
+
+    for game in programma:
+        print(f"{game['datum']} {game['tijdstip']} - {game['uit']} @ {game['thuis']}")
 
 
 if __name__ == "__main__":
