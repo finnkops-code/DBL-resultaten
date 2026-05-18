@@ -1,11 +1,11 @@
 """
-DBL Schedule Scraper — Playwright onderschept AJAX responses
+DBL Schedule Scraper — Playwright
 
-De site doet een POST naar het listAjax endpoint wanneer je een week
-selecteert. Playwright laadt de pagina, onderschept die AJAX responses,
-en triggert ze voor de juiste weken via page.evaluate().
+Schedule  : standaard URL → werkte eerder
+Uitslagen : week-URL      → werkte eerder
+Beide samengevoegd in schedule.json
 
-Installatie (eenmalig):
+Installatie:
     pip install playwright
     playwright install chromium
 """
@@ -108,10 +108,10 @@ def parse_score(text):
         return None
 
 
-def process(raw_games):
+def process(raw):
     games = []
     seen  = set()
-    for r in raw_games:
+    for r in raw:
         home_team = r.get("homeTeam")
         away_team = r.get("awayTeam")
         if not home_team or not away_team:
@@ -157,119 +157,55 @@ def process(raw_games):
     return games
 
 
-def fetch_week_via_browser(page, ajax_url, week, year):
+def load(page, url):
+    """Laad een URL en geef verwerkte wedstrijden terug."""
+    print(f"  {url}")
+    page.goto(url, wait_until="domcontentloaded", timeout=30000)
+    page.wait_for_selector("div.game", timeout=12000)
+    games = process(page.evaluate(EXTRACT_JS))
+    print(f"  → {len(games)} wedstrijden, states: { {g['gespeeld'] and 'played' or 'planned' for g in games} }")
+    return games
+
+
+def scrape_programma(page):
     """
-    Laat Playwright zelf de AJAX POST doen vanuit de browser context.
-    Zo worden cookies, CSRF tokens en headers automatisch meegestuurd.
+    Scrape programma via de standaard URL.
+    Dit werkte eerder — de standaard URL toont de komende week.
+    Filter: niet gespeeld.
     """
-    result = page.evaluate("""
-    async ([url, week, year]) => {
-        // Haal de form tokens op uit de pagina
-        const form = document.querySelector('form.game-list-filter');
-        if (!form) return { error: 'form niet gevonden' };
-
-        const formData = new FormData(form);
-
-        // Overschrijf week en jaar
-        formData.set('tx_c3local_gamelist[filter][week]', String(week));
-        formData.set('tx_c3local_gamelist[filter][year]', String(year));
-        formData.set('tx_c3local_gamelist[filter][team]', '');
-
-        const resp = await fetch(url, {
-            method: 'POST',
-            body: formData,
-            credentials: 'include',
-        });
-
-        return { status: resp.status, html: await resp.text() };
-    }
-    """, [ajax_url, week, year])
-
-    if not result or "error" in result:
-        print(f"  ⚠️  {result}")
-        return []
-
-    print(f"  HTTP {result['status']}, {len(result.get('html', ''))} bytes")
-    return result.get("html", "")
+    print("PROGRAMMA — standaard URL:")
+    games = load(page, BASE_URL)
+    return sorted(
+        [g for g in games if not g["gespeeld"]],
+        key=lambda g: (g["datum"] or "", g["tijdstip"] or "")
+    )
 
 
-def inject_and_extract(page, html):
-    """Injecteer de AJAX HTML in de DOM en extraheer wedstrijden."""
-    if not html:
-        return []
-    games = page.evaluate("""
-    (html) => {
-        // Tijdelijk injecteren in een verborgen div
-        const tmp = document.createElement('div');
-        tmp.innerHTML = html;
-
-        const results = [];
-        tmp.querySelectorAll('div.game').forEach(card => {
-            const state     = card.getAttribute('data-state') || '';
-            const dataStart = card.getAttribute('data-start');
-            const timestamp = dataStart ? parseInt(dataStart) * 1000 : null;
-
-            const badgeEl = card.querySelector('p.game-badge');
-            let division = null;
-            if (badgeEl) {
-                const t = badgeEl.textContent.trim();
-                if (t.includes('Nord'))          division = 'Nord';
-                else if (t.includes('Süd'))      division = 'Süd';
-                else if (t.includes('Zwischen')) division = 'Zwischenphase';
-                else if (t.includes('Playoff'))  division = 'Playoff';
-            }
-
-            const dateEl  = card.querySelector('p.game-header-date');
-            const dateStr = dateEl ? dateEl.textContent.trim() : null;
-
-            const timeEl = card.querySelector('p.game-header-time');
-            let time = null, location = null;
-            if (timeEl) {
-                const m = timeEl.textContent.trim().match(/(\\d{2}:\\d{2})\\s*Uhr,?\\s*(.*)/);
-                if (m) { time = m[1]; location = m[2].trim() || null; }
-            }
-
-            const homeScoreRaw = card.querySelector('span[data-team-score="home"]')?.textContent.trim() || null;
-            const awayScoreRaw = card.querySelector('span[data-team-score="away"]')?.textContent.trim() || null;
-
-            const tooltips = Array.from(card.querySelectorAll('dbl-tooltip[tooltip]'))
-                .map(el => el.getAttribute('tooltip').trim());
-            const homeTeam = tooltips[0] || null;
-            const awayTeam = tooltips[1] || null;
-
-            results.push({ state, timestamp, division, dateStr, time, location,
-                           homeTeam, awayTeam, homeScoreRaw, awayScoreRaw });
-        });
-        return results;
-    }
-    """, html)
-    return process(games)
-
-
-def past_weeks():
+def scrape_uitslagen(page):
+    """
+    Scrape uitslagen via expliciete week-URLs, teruglopend.
+    Dit werkte eerder — week-URL toont gespeelde wedstrijden.
+    Filter: gespeeld.
+    """
     today = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
-    return list(reversed([
+    afgelopen = list(reversed([
         w for w in WEEKS
         if dt.date.fromisocalendar(w["year"], w["week"], 7) < today
     ]))
 
+    print("UITSLAGEN — week-URLs:")
+    for w in afgelopen[:4]:
+        url   = f"{BASE_URL}?year={w['year']}&week={w['week']}"
+        games = load(page, url)
+        played = [g for g in games if g["gespeeld"]]
+        if played:
+            return sorted(played, key=lambda g: (g["datum"] or "", g["tijdstip"] or "")), w
 
-def future_weeks():
-    today = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
-    return [
-        w for w in WEEKS
-        if dt.date.fromisocalendar(w["year"], w["week"], 5) > today
-    ]
+    return [], None
 
 
 def main():
-    today = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
-    print(f"DBL scraper gestart — {dt.datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}\n")
-
-    uitslagen      = []
-    programma      = []
-    uitslagen_week = None
-    programma_week = None
+    print(f"DBL scraper — {dt.datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}\n")
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -283,73 +219,23 @@ def main():
         )
         page = context.new_page()
 
-        # Laad pagina — dit zet cookies en laadt de form tokens
-        print(f"Pagina laden: {BASE_URL}")
-        page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30000)
-        page.wait_for_selector("form.game-list-filter", timeout=15000)
-
-        # Haal de AJAX URL op uit de form action
-        ajax_url = page.evaluate("""
-        () => {
-            const form = document.querySelector('form.game-list-filter');
-            return form ? form.getAttribute('action') : null;
-        }
-        """)
-
-        if not ajax_url:
-            print("⚠️  Form niet gevonden")
-            browser.close()
-            return
-
-        # Maak de URL absoluut als dat nodig is
-        if ajax_url.startswith("/"):
-            ajax_url = "https://www.baseball.de" + ajax_url
-
-        print(f"AJAX URL: {ajax_url}\n")
-
-        # --- Uitslagen ---
-        print("=== UITSLAGEN ===")
-        for w in past_weeks()[:4]:
-            print(f"  Week {w['week']} ({w['label']})...")
-            html   = fetch_week_via_browser(page, ajax_url, w["week"], w["year"])
-            games  = inject_and_extract(page, html)
-            played = [g for g in games if g["gespeeld"]]
-            print(f"  → {len(games)} wedstrijden, {len(played)} gespeeld")
-            if played:
-                uitslagen      = sorted(played, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
-                uitslagen_week = w
-                break
-
-        # --- Programma ---
-        print("\n=== PROGRAMMA ===")
-        for w in future_weeks()[:4]:
-            print(f"  Week {w['week']} ({w['label']})...")
-            html    = fetch_week_via_browser(page, ajax_url, w["week"], w["year"])
-            games   = inject_and_extract(page, html)
-            planned = [g for g in games if not g["gespeeld"]]
-            print(f"  → {len(games)} wedstrijden, {len(planned)} gepland")
-            if planned:
-                programma      = sorted(planned, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
-                programma_week = w
-                break
+        programma            = scrape_programma(page)
+        uitslagen, uitslag_w = scrape_uitslagen(page)
 
         browser.close()
 
-    # Debug
-    print(f"\n--- Uitslagen ({len(uitslagen)}) ---")
-    for u in uitslagen:
-        print(f"  {u['datum']} {u['tijdstip']}  "
-              f"{u['uit']} {u['score_uit']}–{u['score_thuis']} {u['thuis']}  [{u['divisie']}]")
+    print(f"\nProgramma  : {len(programma)} wedstrijden")
+    for g in programma:
+        print(f"  {g['datum']} {g['tijdstip']}  {g['uit']} @ {g['thuis']}  [{g['divisie']}]")
 
-    print(f"\n--- Programma ({len(programma)}) ---")
-    for p in programma:
-        print(f"  {p['datum']} {p['tijdstip']}  {p['uit']} @ {p['thuis']}  [{p['divisie']}]")
+    print(f"\nUitslagen  : {len(uitslagen)} wedstrijden")
+    for g in uitslagen:
+        print(f"  {g['datum']} {g['tijdstip']}  {g['uit']} {g['score_uit']}–{g['score_thuis']} {g['thuis']}  [{g['divisie']}]")
 
     output = {
         "bijgewerkt":     dt.datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "bron":           BASE_URL,
-        "uitslagen_week": uitslagen_week,
-        "programma_week": programma_week,
+        "uitslagen_week": uitslag_w,
         "uitslagen":      uitslagen,
         "programma":      programma,
     }
@@ -357,7 +243,7 @@ def main():
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
-    print(f"\n✅ {JSON_FILE} opgeslagen — {len(uitslagen)} uitslagen, {len(programma)} programma")
+    print(f"\n✅ Opgeslagen — {len(uitslagen)} uitslagen, {len(programma)} programma")
 
 
 if __name__ == "__main__":
