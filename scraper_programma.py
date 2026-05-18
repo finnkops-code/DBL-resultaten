@@ -1,12 +1,7 @@
 """
 DBL Programma Scraper
-Zelfde techniek als scraper_uitslagen.py — loopt week-URLs af,
-pakt de eerste week met planned wedstrijden.
-Schrijft alleen "programma" in schedule.json (behoudt "uitslagen").
-
-Installatie (eenmalig):
-    pip install playwright
-    playwright install chromium
+Haalt aankomende wedstrijden op via expliciete week-URL.
+Schrijft alleen "programma" in schedule.json.
 """
 
 import json
@@ -85,8 +80,14 @@ def process(raw):
     for r in raw:
         h, a = r.get("homeTeam"), r.get("awayTeam")
         if not h or not a: continue
-        if r.get("state") != "planned": continue
-        date_str, time_str, location, division = r.get("dateStr"), r.get("time"), r.get("location"), r.get("division")
+        state = r.get("state", "")
+        # Sla gespeelde en live wedstrijden over — die horen bij uitslagen
+        if state in ("played", "live"):
+            continue
+        date_str, time_str, location, division = (
+            r.get("dateStr"), r.get("time"),
+            r.get("location"), r.get("division")
+        )
         game_date = parse_date_str(date_str)
         if not game_date and r.get("timestamp"):
             d = dt.datetime.fromtimestamp(r["timestamp"] / 1000, tz=timezone.utc) + timedelta(hours=2)
@@ -108,17 +109,15 @@ def process(raw):
 
 def main():
     today = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
-    print(f"DBL Programma Scraper — {dt.datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
 
-    # Zelfde aanpak als uitslagen scraper: loop weken af in omgekeerde volgorde
-    # maar dan vooruit — pak de meest recente week met planned wedstrijden
-    afgelopen = list(reversed([
+    # Komende weken: weeknummer waarvan de zondag >= vandaag
+    komende = [
         w for w in WEEKS
-        if dt.date.fromisocalendar(w["year"], w["week"], 7) < today
-    ]))
+        if dt.date.fromisocalendar(w["year"], w["week"], 7) >= today
+    ]
 
-    programma      = []
-    programma_week = None
+    programma  = []
+    programma_weken = []
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -127,42 +126,32 @@ def main():
             locale="de-DE", viewport={"width": 1280, "height": 800},
         ).new_page()
 
-        # Laad de huidige week-URL — die toont de eerstvolgende wedstrijden
-        # op baseball.de is dit altijd de pagina zonder weekparameter,
-        # of de week die het dichtst bij vandaag ligt
-        # Strategie: probeer eerst de week ná de laatste afgelopen week
-        if afgelopen:
-            laatste_idx = WEEKS.index(afgelopen[0])
-            volgende_weken = WEEKS[laatste_idx + 1:]
-        else:
-            volgende_weken = WEEKS
-
-        for w in volgende_weken:
+        # Haal de eerstvolgende 4 komende weken op
+        for w in komende[:4]:
             url = f"{BASE_URL}?year={w['year']}&week={w['week']}"
             print(f"Laden: {url}")
+            page.goto(url, wait_until="domcontentloaded", timeout=30000)
             try:
-                page.goto(url, wait_until="domcontentloaded", timeout=30000)
                 page.wait_for_selector("div.game", timeout=12000)
-            except Exception as e:
-                print(f"  ⚠️  {e}")
+            except Exception:
+                print(f"  → Geen wedstrijden gevonden op {url}")
                 continue
-
             games = process(page.evaluate(EXTRACT_JS))
-            print(f"→ {len(games)} planned wedstrijden")
-
+            print(f"  → {len(games)} geplande wedstrijden")
             if games:
-                programma      = sorted(games, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
-                programma_week = w
-                break
-            else:
-                print(f"  — Geen planned, volgende week...")
+                programma.extend(games)
+                programma_weken.append(w)
 
         browser.close()
 
-    print(f"\nProgramma ({len(programma)}):")
+    # Sorteer alles op datum en tijdstip
+    programma = sorted(programma, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
+
+    print(f"\nProgramma ({len(programma)} wedstrijden):")
     for g in programma:
         print(f"  {g['datum']} {g['tijdstip']}  {g['uit']} @ {g['thuis']}  [{g['divisie']}]")
 
+    # Lees bestaand JSON-bestand
     data = {}
     if os.path.exists(JSON_FILE):
         with open(JSON_FILE, encoding="utf-8") as f:
@@ -170,12 +159,12 @@ def main():
             except: pass
 
     data["bijgewerkt_programma"] = dt.datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    data["programma_week"]       = programma_week
+    data["programma_weken"]      = programma_weken
     data["programma"]            = programma
 
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-    print(f"✅ {len(programma)} programma-wedstrijden opgeslagen in {JSON_FILE}")
+    print(f"✅ {len(programma)} wedstrijden opgeslagen in programma")
 
 if __name__ == "__main__":
     main()
