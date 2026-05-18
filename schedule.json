@@ -1,10 +1,5 @@
 {
-  "bijgewerkt": "2026-05-18T20:29:22Z",
-  "uitslagen_week": {
-    "label": "15–17 mei",
-    "week": 20,
-    "year": 2026
-  },
+  "bijgewerkt": "2026-05-18T20:38:04Z",
   "uitslagen": [
     {
       "datum": "2026-05-15",
@@ -163,6 +158,5 @@
       "live": false
     }
   ],
-  "programma_weken": [],
   "programma": []
 }
