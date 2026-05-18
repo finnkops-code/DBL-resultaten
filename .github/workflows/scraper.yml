@@ -24,11 +24,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Dependencies installeren
-        run: |
-          pip install playwright
-          playwright install chromium --with-deps
-
       - name: Scraper uitvoeren
         run: python scraper.py
 
