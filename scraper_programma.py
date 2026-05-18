@@ -121,9 +121,21 @@ def process(raw):
 
 
 def main():
-    today = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
+    today    = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
+    iso_week = today.isocalendar()[1]
+    iso_year = today.isocalendar()[0]
     print(f"DBL Programma Scraper — {dt.datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
-    print(f"Vandaag: {today}\n")
+    print(f"Vandaag: {today} (ISO week {iso_week})\n")
+
+    # Sla afgelopen weken over — begin bij de huidige of eerstvolgende week
+    # Een week is "voorbij" als de zondag (dag 7) vóór vandaag ligt
+    weken = [
+        w for w in WEEKS
+        if dt.date.fromisocalendar(w["year"], w["week"], 7) >= today
+    ]
+    if not weken:
+        print("Geen toekomstige weken meer in de lijst.")
+        return
 
     programma      = []
     programma_week = None
@@ -135,9 +147,8 @@ def main():
             locale="de-DE", viewport={"width": 1280, "height": 800},
         ).new_page()
 
-        # Loop door ALLE weken in volgorde — stop bij de eerste
-        # week-URL die planned wedstrijden bevat
-        for w in WEEKS:
+        # Loop alleen door weken vanaf nu — stop bij de eerste met planned wedstrijden
+        for w in weken:
             url = f"{BASE_URL}?year={w['year']}&week={w['week']}"
             print(f"Laden: {url}")
             try:
