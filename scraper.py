@@ -124,10 +124,17 @@ def main():
         uitslagen = sorted(uitslagen, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
         print(f"→ {len(uitslagen)} uitslagen")
 
-        # ── PROGRAMMA: week-URLs, wacht tot planned-wedstrijden geladen zijn ──
-        print(f"\nProgramma laden...")
+        # ── PROGRAMMA: alleen de eerstvolgende speelweek ──
+        # Zoek de eerste week waarvan de vrijdag (dag 5) >= vandaag
+        volgende_week = next(
+            (w for w in WEEKS if dt.date.fromisocalendar(w["year"], w["week"], 5) >= today),
+            None
+        )
+        te_scrapen = [volgende_week] if volgende_week else []
+
+        print(f"\nProgramma laden (alleen eerstvolgende week: {volgende_week['label'] if volgende_week else 'geen'})...")
         seen_p = set()
-        for w in WEEKS:
+        for w in te_scrapen:
             url = f"{BASE_URL}?year={w['year']}&week={w['week']}"
             print(f"  {w['label']}: {url}")
             page.goto(url, wait_until="domcontentloaded", timeout=30000)
