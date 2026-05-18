@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-05-18T07:58:41Z",
+  "bijgewerkt": "2026-05-18T08:47:06Z",
   "bron": "https://www.baseball.de/saison/spielplaene",
   "uitslagen_week": {
     "label": "15–17 mei",
@@ -164,8 +164,5 @@
       "live": false
     }
   ],
-  "programma": [],
-  "bijgewerkt_uitslagen": "2026-05-18T08:42:36Z",
-  "bijgewerkt_programma": "2026-05-18T08:42:38Z",
-  "programma_week": null
+  "programma": []
 }
