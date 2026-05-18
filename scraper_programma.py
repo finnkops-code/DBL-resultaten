@@ -1,7 +1,7 @@
 """
-DBL Schedule Scraper
+Snelle DBL Schedule Scraper
 Haalt aankomende geplande wedstrijden op van baseball.de
-en schrijft deze naar schedule.json zonder bestaande data te verwijderen.
+en bewaart ze in schedule.json zonder andere JSON-data te verwijderen.
 """
 
 import json
@@ -14,8 +14,8 @@ from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeo
 BASE_URL = "https://www.baseball.de/saison/spielplaene"
 JSON_FILE = "schedule.json"
 
-MAX_WEEKS_AHEAD = 16
-MAX_GAMES = 20
+MAX_WEEKS_AHEAD = 8
+MAX_GAMES = 10
 
 MAANDEN_DE = {
     "Januar": 1,
@@ -32,7 +32,6 @@ MAANDEN_DE = {
     "November": 11,
     "Dezember": 12,
 }
-
 
 EXTRACT_JS = """
 () => {
@@ -61,9 +60,6 @@ EXTRACT_JS = """
             .map(el => el.getAttribute("tooltip")?.trim())
             .filter(Boolean);
 
-        const homeScoreRaw = card.querySelector('span[data-team-score="home"]')?.textContent.trim() || null;
-        const awayScoreRaw = card.querySelector('span[data-team-score="away"]')?.textContent.trim() || null;
-
         games.push({
             state,
             dataStart,
@@ -73,8 +69,8 @@ EXTRACT_JS = """
             location,
             homeTeam: teams[0] || null,
             awayTeam: teams[1] || null,
-            homeScoreRaw,
-            awayScoreRaw
+            homeScoreRaw: card.querySelector('span[data-team-score="home"]')?.textContent.trim() || null,
+            awayScoreRaw: card.querySelector('span[data-team-score="away"]')?.textContent.trim() || null
         });
     });
 
@@ -107,7 +103,6 @@ def parse_date(date_str, data_start=None):
             day = int(match.group(1))
             month_name = match.group(2)
             year = int(match.group(3))
-
             month = MAANDEN_DE.get(month_name)
 
             if month:
@@ -115,8 +110,7 @@ def parse_date(date_str, data_start=None):
 
     if data_start:
         try:
-            timestamp = int(data_start)
-            return dt.datetime.fromtimestamp(timestamp, tz=timezone.utc).date()
+            return dt.datetime.fromtimestamp(int(data_start), tz=timezone.utc).date()
         except Exception:
             return None
 
@@ -148,8 +142,9 @@ def is_played(game):
     home_score = game.get("homeScoreRaw")
     away_score = game.get("awayScoreRaw")
 
-    if home_score and away_score and home_score not in ["-", "--"] and away_score not in ["-", "--"]:
-        return True
+    if home_score and away_score:
+        if home_score.strip() not in ["-", "--", ""] and away_score.strip() not in ["-", "--", ""]:
+            return True
 
     return False
 
@@ -172,35 +167,29 @@ def normalize_game(game):
     }
 
 
-def get_iso_weeks_from_today(max_weeks):
+def get_weeks_from_today(max_weeks):
     today = dt.datetime.now(timezone.utc).date()
     weeks = []
+    seen = set()
 
     for i in range(max_weeks):
         date = today + dt.timedelta(weeks=i)
         iso = date.isocalendar()
-
-        weeks.append({
-            "year": iso.year,
-            "week": iso.week,
-        })
-
-    unique = []
-    seen = set()
-
-    for week in weeks:
-        key = (week["year"], week["week"])
+        key = (iso.year, iso.week)
 
         if key not in seen:
             seen.add(key)
-            unique.append(week)
+            weeks.append({
+                "year": iso.year,
+                "week": iso.week,
+            })
 
-    return unique
+    return weeks
 
 
 def scrape_schedule():
     today = dt.datetime.now(timezone.utc).date()
-    weeks = get_iso_weeks_from_today(MAX_WEEKS_AHEAD)
+    weeks = get_weeks_from_today(MAX_WEEKS_AHEAD)
 
     all_games = []
     seen = set()
@@ -224,15 +213,10 @@ def scrape_schedule():
             print(f"Laden: {url}")
 
             try:
-                page.goto(url, wait_until="networkidle", timeout=30000)
+                page.goto(url, wait_until="domcontentloaded", timeout=15000)
+                page.wait_for_selector("div.game", timeout=3000)
             except PlaywrightTimeoutError:
-                print("Pagina timeout, week overgeslagen")
-                continue
-
-            try:
-                page.wait_for_selector("div.game", timeout=8000)
-            except PlaywrightTimeoutError:
-                print("Geen wedstrijden gevonden")
+                print("Geen wedstrijden gevonden of pagina te traag")
                 continue
 
             raw_games = page.evaluate(EXTRACT_JS)
@@ -294,9 +278,7 @@ def main():
     data["programma"] = programma
 
     if programma:
-        first_date = programma[0]["datum"]
-        first_iso = dt.date.fromisoformat(first_date).isocalendar()
-
+        first_iso = dt.date.fromisoformat(programma[0]["datum"]).isocalendar()
         data["programma_week"] = {
             "year": first_iso.year,
             "week": first_iso.week,
