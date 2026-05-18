@@ -1,29 +1,38 @@
 """
-DBL Schedule Scraper — Playwright met klikgedrag
+DBL Schedule Scraper — directe AJAX POST naar baseball.de
 
-Het probleem: de week-URL parameter werkt niet — de site filtert
-wedstrijden via JavaScript na een klik op de weekfilter.
-Oplossing: Playwright klikt zelf op de juiste week in de filter.
-
-Strategie:
-  1. Laad de pagina eenmalig
-  2. Lees alle beschikbare weekfilter-opties uit de DOM
-  3. Klik op de meest recente afgelopen week → scrape uitslagen
-  4. Klik op de eerstvolgende toekomstige week → scrape programma
+Werkwijze:
+  1. Haal de pagina op om de TYPO3 form-tokens te extraheren
+  2. POST naar het listAjax endpoint met year + week als filter
+  3. Parseer de HTML-response met BeautifulSoup
 
 Installatie (eenmalig):
-    pip install playwright
-    playwright install chromium
+    pip install requests beautifulsoup4
 """
 
 import json
 import re
 import datetime as dt
 from datetime import timezone, timedelta
-from playwright.sync_api import sync_playwright
+from urllib.parse import urlencode
+import urllib.request
+from html.parser import HTMLParser
 
-BASE_URL  = "https://www.baseball.de/saison/spielplaene"
-JSON_FILE = "schedule.json"
+BASE_URL   = "https://www.baseball.de/saison/spielplaene"
+JSON_FILE  = "schedule.json"
+
+WEEKS = [
+    {"label": "10–12 apr", "week": 14, "year": 2026},
+    {"label": "17–19 apr", "week": 16, "year": 2026},
+    {"label": "24–26 apr", "week": 17, "year": 2026},
+    {"label": "01–03 mei", "week": 18, "year": 2026},
+    {"label": "08–10 mei", "week": 19, "year": 2026},
+    {"label": "15–17 mei", "week": 20, "year": 2026},
+    {"label": "29–31 mei", "week": 22, "year": 2026},
+    {"label": "05–07 jun", "week": 23, "year": 2026},
+    {"label": "12–14 jun", "week": 24, "year": 2026},
+    {"label": "19–21 jun", "week": 25, "year": 2026},
+]
 
 MAANDEN_DE = {
     "Januar": 1, "Februar": 2, "März": 3, "April": 4,
@@ -31,167 +40,124 @@ MAANDEN_DE = {
     "September": 9, "Oktober": 10, "November": 11, "Dezember": 12,
 }
 
-EXTRACT_JS = """
-() => {
-    const results = [];
-    document.querySelectorAll('div.game').forEach(card => {
-        const state     = card.getAttribute('data-state') || '';
-        const dataStart = card.getAttribute('data-start');
-        const timestamp = dataStart ? parseInt(dataStart) * 1000 : null;
-
-        const badgeEl = card.querySelector('p.game-badge');
-        let division = null;
-        if (badgeEl) {
-            const t = badgeEl.textContent.trim();
-            if (t.includes('Nord'))          division = 'Nord';
-            else if (t.includes('Süd'))      division = 'Süd';
-            else if (t.includes('Zwischen')) division = 'Zwischenphase';
-            else if (t.includes('Playoff'))  division = 'Playoff';
-        }
-
-        const dateEl  = card.querySelector('p.game-header-date');
-        const dateStr = dateEl ? dateEl.textContent.trim() : null;
-
-        const timeEl = card.querySelector('p.game-header-time');
-        let time = null, location = null;
-        if (timeEl) {
-            const m = timeEl.textContent.trim().match(/(\\d{2}:\\d{2})\\s*Uhr,?\\s*(.*)/);
-            if (m) { time = m[1]; location = m[2].trim() || null; }
-        }
-
-        const homeScoreRaw = card.querySelector('span[data-team-score="home"]')?.textContent.trim() || null;
-        const awayScoreRaw = card.querySelector('span[data-team-score="away"]')?.textContent.trim() || null;
-
-        const tooltips = Array.from(card.querySelectorAll('dbl-tooltip[tooltip]'))
-            .map(el => el.getAttribute('tooltip').trim());
-        const homeTeam = tooltips[0] || null;
-        const awayTeam = tooltips[1] || null;
-
-        results.push({ state, timestamp, division, dateStr, time, location,
-                       homeTeam, awayTeam, homeScoreRaw, awayScoreRaw });
-    });
-    return results;
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/122.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml",
+    "Accept-Language": "de-DE,de;q=0.9",
 }
-"""
-
-# Leest alle beschikbare weekfilter-opties uit de DOM
-WEEKS_JS = """
-() => {
-    const options = [];
-    // Zoek de weekfilter — dit zijn klikbare elementen met datumtekst
-    // Probeer verschillende selectors die de site kan gebruiken
-    const selectors = [
-        'li[data-week]',
-        '[data-filter-week]',
-        '.filter-week li',
-        '.spielplan-filter li',
-        'ul li a[href*="week"]',
-        '[data-week]',
-    ];
-
-    for (const sel of selectors) {
-        const els = document.querySelectorAll(sel);
-        if (els.length > 0) {
-            els.forEach(el => {
-                options.push({
-                    selector: sel,
-                    text: el.textContent.trim(),
-                    dataWeek: el.getAttribute('data-week'),
-                    href: el.querySelector('a')?.href || el.getAttribute('href') || null,
-                    outerHTML: el.outerHTML.substring(0, 200),
-                });
-            });
-            break;
-        }
-    }
-
-    // Fallback: dump alle li elementen in de buurt van "Spielwoche"
-    if (options.length === 0) {
-        document.querySelectorAll('li').forEach(el => {
-            const t = el.textContent.trim();
-            if (t.match(/\\d{2}\\.\\d{2}\\.\\d{4}/)) {
-                options.push({
-                    selector: 'li (fallback)',
-                    text: t,
-                    dataWeek: el.getAttribute('data-week'),
-                    href: el.querySelector('a')?.href || null,
-                    outerHTML: el.outerHTML.substring(0, 200),
-                });
-            }
-        });
-    }
-
-    return options;
-}
-"""
 
 
-def parse_date_str(date_str):
-    if not date_str:
-        return None
-    m = re.search(r"(\d+)\.\s+(\w+)\s+(\d{4})", str(date_str))
-    if not m:
-        return None
-    day   = int(m.group(1))
-    month = MAANDEN_DE.get(m.group(2), 0)
-    year  = int(m.group(3))
-    if not month:
-        return None
-    try:
-        return dt.datetime(year, month, day).date()
-    except ValueError:
-        return None
+def fetch(url, data=None, session_cookie=None):
+    """Doet een GET of POST request en geeft de HTML terug."""
+    headers = dict(HEADERS)
+    if session_cookie:
+        headers["Cookie"] = session_cookie
+    if data:
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
+        payload = urlencode(data).encode("utf-8")
+        req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
+    else:
+        req = urllib.request.Request(url, headers=headers)
+
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        cookie = resp.headers.get("Set-Cookie", "")
+        return resp.read().decode("utf-8"), cookie
 
 
-def parse_date_range(text):
-    """Parset '15.05.2026 - 17.05.2026' → (date, date)"""
-    dates = re.findall(r"(\d{2})\.(\d{2})\.(\d{4})", text)
-    if len(dates) >= 2:
-        d1 = dt.date(int(dates[0][2]), int(dates[0][1]), int(dates[0][0]))
-        d2 = dt.date(int(dates[1][2]), int(dates[1][1]), int(dates[1][0]))
-        return d1, d2
-    elif len(dates) == 1:
-        d = dt.date(int(dates[0][2]), int(dates[0][1]), int(dates[0][0]))
-        return d, d
-    return None, None
+def extract_form_tokens(html):
+    """Haalt de TYPO3 form tokens en AJAX URL op uit de pagina HTML."""
+    tokens = {}
+
+    # Zoek de AJAX action URL
+    ajax_match = re.search(
+        r'action="(/saison/spielplaene\?[^"]+listAjax[^"]+)"',
+        html
+    )
+    if ajax_match:
+        tokens["action"] = "https://www.baseball.de" + ajax_match.group(1).replace("&amp;", "&")
+
+    # Zoek alle hidden input velden in de game-list-filter form
+    hidden_re = re.compile(
+        r'<input[^>]+name="([^"]+)"[^>]+value="([^"]*)"',
+        re.IGNORECASE
+    )
+    for name, value in hidden_re.findall(html):
+        if "tx_c3local_gamelist" in name and "filter" not in name:
+            tokens[name] = value
+
+    return tokens
 
 
-def parse_score(text):
-    if not text or str(text).strip() in ("--", "-", "", "?"):
-        return None
-    try:
-        return int(str(text).strip())
-    except ValueError:
-        return None
-
-
-def process(raw_games):
+def parse_games_from_html(html, week, year):
+    """Parseer div.game elementen uit de AJAX HTML response."""
     games = []
     seen  = set()
-    for r in raw_games:
-        home_team = r.get("homeTeam")
-        away_team = r.get("awayTeam")
+
+    # Splits op div.game blokken
+    # Elk blok begint met <div class="game
+    blocks = re.split(r'(?=<div[^>]+class="game[^"]*"[^>]*>)', html)
+
+    for block in blocks:
+        if 'class="game' not in block:
+            continue
+
+        # data-state
+        state_m = re.search(r'data-state="([^"]+)"', block)
+        state   = state_m.group(1) if state_m else ""
+
+        # divisie
+        badge_m  = re.search(r'class="game-badge"[^>]*>([^<]+)<', block)
+        division = None
+        if badge_m:
+            t = badge_m.group(1).strip()
+            if "Nord" in t:        division = "Nord"
+            elif "Süd" in t:       division = "Süd"
+            elif "Zwischen" in t:  division = "Zwischenphase"
+            elif "Playoff" in t:   division = "Playoff"
+
+        # datum
+        date_m   = re.search(r'class="game-header-date"[^>]*>([^<]+)<', block)
+        date_str = date_m.group(1).strip() if date_m else None
+
+        # tijd + locatie: "19:00 Uhr, Bonn"
+        time_m   = re.search(r'class="game-header-time"[^>]*>([^<]+)<', block)
+        time_str = None
+        location = None
+        if time_m:
+            raw = time_m.group(1).strip()
+            tm  = re.match(r"(\d{2}:\d{2})\s*Uhr,?\s*(.*)", raw)
+            if tm:
+                time_str = tm.group(1)
+                location = tm.group(2).strip() or None
+
+        # teamnamen via tooltip attribuut
+        tooltips  = re.findall(r'tooltip="([^"]+)"', block)
+        home_team = tooltips[0] if len(tooltips) > 0 else None
+        away_team = tooltips[1] if len(tooltips) > 1 else None
+
         if not home_team or not away_team:
             continue
 
-        state     = r.get("state", "")
-        date_str  = r.get("dateStr")
-        time_str  = r.get("time")
-        location  = r.get("location")
-        division  = r.get("division")
-        timestamp = r.get("timestamp")
+        # scores
+        home_score_m = re.search(r'data-team-score="home"[^>]*>([^<]+)<', block)
+        away_score_m = re.search(r'data-team-score="away"[^>]*>([^<]+)<', block)
+        score_home   = parse_score(home_score_m.group(1) if home_score_m else None)
+        score_away   = parse_score(away_score_m.group(1) if away_score_m else None)
+
+        # datum parsen
         game_date = parse_date_str(date_str)
 
-        if not game_date and timestamp:
-            d = dt.datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc) + timedelta(hours=2)
-            game_date = d.date()
-            if not time_str:
-                time_str = d.strftime("%H:%M")
+        # timestamp fallback
+        if not game_date:
+            ts_m = re.search(r'data-start="(\d+)"', block)
+            if ts_m:
+                d = dt.datetime.fromtimestamp(int(ts_m.group(1)), tz=timezone.utc) + timedelta(hours=2)
+                game_date = d.date()
+                if not time_str:
+                    time_str = d.strftime("%H:%M")
 
-        score_home = parse_score(r.get("homeScoreRaw"))
-        score_away = parse_score(r.get("awayScoreRaw"))
-        gespeeld   = state in ("played", "live")
-        is_live    = state == "live"
+        gespeeld = state in ("played", "live")
+        is_live  = state == "live"
 
         key = (home_team, away_team, str(game_date), time_str)
         if key in seen:
@@ -211,118 +177,109 @@ def process(raw_games):
             "gespeeld":    gespeeld,
             "live":        is_live,
         })
+
     return games
 
 
-def scrape_after_click(page, element, label):
-    """Klik op een weekfilter element en wacht tot de wedstrijden herladen zijn."""
-    print(f"  Klikken op: {label}")
-    element.click()
-    # Wacht tot de DOM bijgewerkt is na de klik
-    page.wait_for_timeout(2000)
-    raw   = page.evaluate(EXTRACT_JS)
-    games = process(raw)
-    played  = sum(1 for g in games if g["gespeeld"])
-    planned = sum(1 for g in games if not g["gespeeld"])
-    print(f"  → {len(games)} wedstrijden ({played} played, {planned} planned)")
-    return games
+def parse_date_str(date_str):
+    if not date_str:
+        return None
+    m = re.search(r"(\d+)\.\s+(\w+)\s+(\d{4})", str(date_str))
+    if not m:
+        return None
+    day   = int(m.group(1))
+    month = MAANDEN_DE.get(m.group(2), 0)
+    year  = int(m.group(3))
+    if not month:
+        return None
+    try:
+        return dt.datetime(year, month, day).date()
+    except ValueError:
+        return None
+
+
+def parse_score(text):
+    if not text or str(text).strip() in ("--", "-", "", "?"):
+        return None
+    try:
+        return int(str(text).strip())
+    except ValueError:
+        return None
+
+
+def fetch_week(ajax_url, tokens, week, year, cookie):
+    """Haalt één speelweek op via AJAX POST."""
+    data = dict(tokens)
+    data["tx_c3local_gamelist[filter][year]"] = str(year)
+    data["tx_c3local_gamelist[filter][week]"] = str(week)
+    data["tx_c3local_gamelist[filter][team]"] = ""
+
+    html, _ = fetch(ajax_url, data=data, session_cookie=cookie)
+    return parse_games_from_html(html, week, year)
+
+
+def past_weeks():
+    today = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
+    return list(reversed([
+        w for w in WEEKS
+        if dt.date.fromisocalendar(w["year"], w["week"], 7) < today
+    ]))
+
+
+def future_weeks():
+    today = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
+    return [
+        w for w in WEEKS
+        if dt.date.fromisocalendar(w["year"], w["week"], 5) > today
+    ]
 
 
 def main():
-    today = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
-    print(f"DBL scraper gestart — {dt.datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
-    print(f"Vandaag: {today}\n")
+    print(f"DBL scraper gestart — {dt.datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}\n")
+
+    # Stap 1: haal de hoofdpagina op voor tokens en cookie
+    print(f"Tokens ophalen: {BASE_URL}")
+    html, cookie = fetch(BASE_URL)
+    tokens = extract_form_tokens(html)
+
+    print(f"  AJAX URL : {tokens.get('action', 'NIET GEVONDEN')}")
+    print(f"  Tokens   : {len([k for k in tokens if k != 'action'])} form-velden")
+    print(f"  Cookie   : {cookie[:60]}..." if cookie else "  Cookie   : geen")
+
+    if "action" not in tokens:
+        print("⚠️  AJAX URL niet gevonden — controleer de pagina")
+        return
+
+    ajax_url = tokens.pop("action")
 
     uitslagen      = []
     programma      = []
     uitslagen_week = None
     programma_week = None
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        context = browser.new_context(
-            user_agent=(
-                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-                "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-            ),
-            locale="de-DE",
-            viewport={"width": 1280, "height": 800},
-        )
-        page = context.new_page()
+    # Stap 2: uitslagen — meest recente afgelopen week met played wedstrijden
+    print("\n=== UITSLAGEN ===")
+    for w in past_weeks()[:4]:
+        print(f"  Week {w['week']} ({w['label']})...")
+        games  = fetch_week(ajax_url, tokens, w["week"], w["year"], cookie)
+        played = [g for g in games if g["gespeeld"]]
+        print(f"  → {len(games)} wedstrijden, {len(played)} gespeeld")
+        if played:
+            uitslagen      = sorted(played, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
+            uitslagen_week = w
+            break
 
-        # Laad pagina eenmalig
-        print(f"Laden: {BASE_URL}")
-        page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30000)
-        page.wait_for_selector("div.game", timeout=12000)
-
-        # Lees beschikbare weekfilters uit
-        week_options = page.evaluate(WEEKS_JS)
-        print(f"\n{len(week_options)} weekfilter-opties gevonden:")
-        for opt in week_options:
-            print(f"  [{opt['selector']}] {opt['text'][:60]}")
-
-        # Categoriseer de weekfilters op datum
-        afgelopen  = []  # (start_date, end_date, element_index)
-        toekomstig = []
-
-        for i, opt in enumerate(week_options):
-            start, end = parse_date_range(opt["text"])
-            if start and end:
-                if end < today:
-                    afgelopen.append((start, end, i, opt["text"]))
-                elif start > today:
-                    toekomstig.append((start, end, i, opt["text"]))
-
-        afgelopen.sort(key=lambda x: x[0], reverse=True)   # meest recent eerst
-        toekomstig.sort(key=lambda x: x[0])                 # eerstvolgende eerst
-
-        print(f"\nAfgelopen weken  : {[x[3] for x in afgelopen[:3]]}")
-        print(f"Toekomstige weken: {[x[3] for x in toekomstig[:3]]}")
-
-        # Haal de weekfilter elementen op als Playwright-objecten
-        # We gebruiken de tekst van het filter om ze te vinden en te klikken
-        def get_week_elements():
-            """Geeft alle klikbare weekfilter-elementen terug."""
-            for sel in ['li[data-week]', '[data-filter-week]', '.filter-week li',
-                        '.spielplan-filter li', '[data-week]']:
-                els = page.query_selector_all(sel)
-                if els:
-                    return els
-            # Fallback: li met datumpatroon
-            all_li = page.query_selector_all('li')
-            return [el for el in all_li
-                    if re.search(r'\d{2}\.\d{2}\.\d{4}', el.text_content() or '')]
-
-        week_elements = get_week_elements()
-        print(f"\n{len(week_elements)} klikbare weekelementen gevonden")
-
-        # --- Uitslagen: klik op meest recente afgelopen week ---
-        print("\n=== UITSLAGEN ===")
-        for start, end, idx, label in afgelopen[:4]:
-            if idx < len(week_elements):
-                games  = scrape_after_click(page, week_elements[idx], label)
-                played = [g for g in games if g["gespeeld"]]
-                if played:
-                    uitslagen      = sorted(played, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
-                    uitslagen_week = {"label": label, "van": str(start), "tot": str(end)}
-                    break
-            # Refresh elementen na elke klik (DOM kan veranderen)
-            week_elements = get_week_elements()
-
-        # --- Programma: klik op eerstvolgende toekomstige week ---
-        print("\n=== PROGRAMMA ===")
-        week_elements = get_week_elements()
-        for start, end, idx, label in toekomstig[:4]:
-            if idx < len(week_elements):
-                games   = scrape_after_click(page, week_elements[idx], label)
-                planned = [g for g in games if not g["gespeeld"]]
-                if planned:
-                    programma      = sorted(planned, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
-                    programma_week = {"label": label, "van": str(start), "tot": str(end)}
-                    break
-            week_elements = get_week_elements()
-
-        browser.close()
+    # Stap 3: programma — eerstvolgende toekomstige week met planned wedstrijden
+    print("\n=== PROGRAMMA ===")
+    for w in future_weeks()[:4]:
+        print(f"  Week {w['week']} ({w['label']})...")
+        games   = fetch_week(ajax_url, tokens, w["week"], w["year"], cookie)
+        planned = [g for g in games if not g["gespeeld"]]
+        print(f"  → {len(games)} wedstrijden, {len(planned)} gepland")
+        if planned:
+            programma      = sorted(planned, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
+            programma_week = w
+            break
 
     # Debug output
     print(f"\n--- Uitslagen ({len(uitslagen)}) ---")
