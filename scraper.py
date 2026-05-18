@@ -1,9 +1,9 @@
 """
 DBL Scraper — uitslagen + programma in één run, één JSON.
 
-Logica:
-  Uitslagen : BASE_URL zonder parameters → data-state "played" / "live"
-  Programma : BASE_URL?year=…&week=… per komende week → data-state "planned"
+Uitslagen : BASE_URL zonder parameters → data-state "played" / "live"
+Programma : BASE_URL?year=…&week=… → data-state "planned"
+             Wacht op networkidle zodat de AJAX-call klaar is.
 """
 
 import json, os, re, datetime as dt
@@ -83,10 +83,13 @@ def parse_score(t):
     except: return None
 
 def scrape_page(page, url):
+    """Laad pagina en wacht tot AJAX klaar is én div.game zichtbaar is."""
     print(f"  Laden: {url}")
-    page.goto(url, wait_until="domcontentloaded", timeout=30000)
-    page.wait_for_selector("div.game", timeout=12000)
-    return page.evaluate(EXTRACT_JS)
+    page.goto(url, wait_until="networkidle", timeout=45000)
+    page.wait_for_selector("div.game", timeout=15000)
+    raw = page.evaluate(EXTRACT_JS)
+    print(f"  → {len(raw)} kaarten gevonden, states: { {r['state'] for r in raw} }")
+    return raw
 
 def to_uitslag(r):
     date_str, time_str = r.get("dateStr"), r.get("time")
@@ -129,18 +132,17 @@ def to_programma(r):
 def main():
     today = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
 
-    # Komende weken: zondag van de week >= vandaag
     komende_weken = [
         w for w in WEEKS
         if dt.date.fromisocalendar(w["year"], w["week"], 7) >= today
     ]
 
-    uitslagen       = []
-    uitslagen_week  = None
-    programma       = []
+    uitslagen      = []
+    uitslagen_week = None
+    programma      = []
     programma_weken = []
-    seen_u          = set()
-    seen_p          = set()
+    seen_u = set()
+    seen_p = set()
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -149,7 +151,7 @@ def main():
             locale="de-DE", viewport={"width": 1280, "height": 800},
         ).new_page()
 
-        # ── 1. UITSLAGEN: geen parameters → site toont meest recente gespeelde week
+        # ── 1. UITSLAGEN: geen params → site toont meest recente gespeelde week
         print("\n=== UITSLAGEN ===")
         try:
             raw = scrape_page(page, BASE_URL)
@@ -163,11 +165,11 @@ def main():
             uitslagen = sorted(uitslagen, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
             if uitslagen:
                 uitslagen_week = {"label": "meest recent", "url": BASE_URL}
-            print(f"  → {len(uitslagen)} uitslagen")
+            print(f"  → {len(uitslagen)} uitslagen opgehaald")
         except Exception as e:
             print(f"  !! Fout bij uitslagen: {e}")
 
-        # ── 2. PROGRAMMA: week-URLs → data-state="planned"
+        # ── 2. PROGRAMMA: week-URLs, wacht op networkidle zodat AJAX klaar is
         print("\n=== PROGRAMMA ===")
         for w in komende_weken[:4]:
             url = f"{BASE_URL}?year={w['year']}&week={w['week']}"
@@ -192,20 +194,20 @@ def main():
 
     programma = sorted(programma, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
 
-    # ── 3. Schrijf alles in één keer naar schedule.json
+    # ── 3. Alles in één keer naar schedule.json
     now_str = dt.datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     data = {
-        "bijgewerkt":       now_str,
-        "uitslagen_week":   uitslagen_week,
-        "uitslagen":        uitslagen,
-        "programma_weken":  programma_weken,
-        "programma":        programma,
+        "bijgewerkt":      now_str,
+        "uitslagen_week":  uitslagen_week,
+        "uitslagen":       uitslagen,
+        "programma_weken": programma_weken,
+        "programma":       programma,
     }
 
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-    print(f"\n✅ schedule.json geschreven: {len(uitslagen)} uitslagen, {len(programma)} programma")
+    print(f"\n✅ schedule.json: {len(uitslagen)} uitslagen, {len(programma)} programma")
 
 if __name__ == "__main__":
     main()
