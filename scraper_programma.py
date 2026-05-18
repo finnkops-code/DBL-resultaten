@@ -1,10 +1,9 @@
 """
 DBL Programma Scraper — Playwright (headless Chrome)
 
-Laadt de standaard spielplaene-pagina (geen week-parameter).
-De site toont zelf de eerstvolgende speelweek.
-Schrijft alleen de "programma" sleutel in schedule.json,
-laat "uitslagen" onaangeroerd.
+Zoekt de eerstvolgende speelweek uit de WEEKS lijst waarvan de
+vrijdag nog in de toekomst ligt, en laadt die specifieke week-URL.
+Schrijft alleen de "programma" sleutel in schedule.json.
 
 Installatie (eenmalig):
     pip install playwright
@@ -20,6 +19,19 @@ from playwright.sync_api import sync_playwright
 
 BASE_URL  = "https://www.baseball.de/saison/spielplaene"
 JSON_FILE = "schedule.json"
+
+WEEKS = [
+    {"label": "10–12 apr", "week": 14, "year": 2026},
+    {"label": "17–19 apr", "week": 16, "year": 2026},
+    {"label": "24–26 apr", "week": 17, "year": 2026},
+    {"label": "01–03 mei", "week": 18, "year": 2026},
+    {"label": "08–10 mei", "week": 19, "year": 2026},
+    {"label": "15–17 mei", "week": 20, "year": 2026},
+    {"label": "29–31 mei", "week": 22, "year": 2026},
+    {"label": "05–07 jun", "week": 23, "year": 2026},
+    {"label": "12–14 jun", "week": 24, "year": 2026},
+    {"label": "19–21 jun", "week": 25, "year": 2026},
+]
 
 MAANDEN_DE = {
     "Januar": 1, "Februar": 2, "März": 3, "April": 4,
@@ -146,9 +158,24 @@ def process(raw_games):
     return games
 
 
+def next_weeks():
+    """
+    Geeft toekomstige weken terug op volgorde.
+    Probeert meerdere weken vooruit als een week geen planned wedstrijden heeft
+    (bijv. door een vrije week of afgelasting).
+    """
+    today = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
+    return [
+        w for w in WEEKS
+        if dt.date.fromisocalendar(w["year"], w["week"], 5) > today
+    ]
+
+
 def main():
     print(f"DBL programma scraper — {dt.datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
-    print(f"  Laden: {BASE_URL}")
+
+    programma      = []
+    programma_week = None
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -162,24 +189,32 @@ def main():
         )
         page = context.new_page()
 
-        try:
-            page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30000)
-            page.wait_for_selector("div.game", timeout=12000)
-            raw = page.evaluate(EXTRACT_JS)
-        except Exception as e:
-            print(f"  ⚠️  Fout: {e}")
-            raw = []
+        # Probeer toekomstige weken totdat we planned wedstrijden vinden
+        for w in next_weeks()[:4]:
+            url = f"{BASE_URL}?year={w['year']}&week={w['week']}"
+            print(f"  Probeer week {w['week']} ({w['label']}): {url}")
+            try:
+                page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                page.wait_for_selector("div.game", timeout=12000)
+            except Exception as e:
+                print(f"  ⚠️  Fout: {e}")
+                continue
+
+            raw    = page.evaluate(EXTRACT_JS)
+            games  = process(raw)
+            planned = [g for g in games if not g["gespeeld"]]
+            print(f"  → {len(planned)} geplande wedstrijden")
+
+            if planned:
+                programma      = sorted(planned, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
+                programma_week = w
+                break
 
         browser.close()
 
-    all_games = process(raw)
-    programma = sorted(
-        [g for g in all_games if not g["gespeeld"]],
-        key=lambda g: (g["datum"] or "", g["tijdstip"] or "")
-    )
-
     # Debug
-    print(f"\nProgramma ({len(programma)}):")
+    print(f"\nProgramma week {programma_week['week'] if programma_week else '?'} "
+          f"({programma_week['label'] if programma_week else '-'}) — {len(programma)} wedstrijden:")
     for p in programma:
         print(f"  {p['datum']} {p['tijdstip']}  {p['uit']} @ {p['thuis']}  [{p['divisie']}]")
 
@@ -193,6 +228,7 @@ def main():
                 pass
 
     data["bijgewerkt_programma"] = dt.datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    data["programma_week"]       = programma_week
     data["programma"]            = programma
 
     with open(JSON_FILE, "w", encoding="utf-8") as f:
