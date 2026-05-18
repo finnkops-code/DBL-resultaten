@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-05-18T20:38:04Z",
+  "bijgewerkt": "2026-05-18T20:41:34Z",
   "uitslagen": [
     {
       "datum": "2026-05-15",
@@ -158,5 +158,438 @@
       "live": false
     }
   ],
-  "programma": []
+  "programma": [
+    {
+      "datum": "2026-05-29",
+      "datum_str": "Freitag, 29. Mai 2026",
+      "tijdstip": "19:00",
+      "thuis": "Bonn Capitals",
+      "uit": "Cologne Cardinals",
+      "locatie": "Bonn",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-05-29",
+      "datum_str": "Freitag, 29. Mai 2026",
+      "tijdstip": "19:00",
+      "thuis": "Mainz Athletics",
+      "uit": "Guggenberger Legionäre",
+      "locatie": "Mainz",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-05-29",
+      "datum_str": "Freitag, 29. Mai 2026",
+      "tijdstip": "19:00",
+      "thuis": "Heidenheim Heideköpfe",
+      "uit": "München-Haar Disciples",
+      "locatie": "Heidenheim an der Brenz",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-05-30",
+      "datum_str": "Samstag, 30. Mai 2026",
+      "tijdstip": "13:00",
+      "thuis": "Mainz Athletics",
+      "uit": "Guggenberger Legionäre",
+      "locatie": "Mainz",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-05-30",
+      "datum_str": "Samstag, 30. Mai 2026",
+      "tijdstip": "14:00",
+      "thuis": "Cologne Cardinals",
+      "uit": "Bonn Capitals",
+      "locatie": "Köln",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-05-30",
+      "datum_str": "Samstag, 30. Mai 2026",
+      "tijdstip": "14:00",
+      "thuis": "Heidenheim Heideköpfe",
+      "uit": "München-Haar Disciples",
+      "locatie": "Heidenheim an der Brenz",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-05-30",
+      "datum_str": "Samstag, 30. Mai 2026",
+      "tijdstip": "16:00",
+      "thuis": "Gauting Indians",
+      "uit": "Stuttgart Reds",
+      "locatie": "Gauting",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-05-30",
+      "datum_str": "Samstag, 30. Mai 2026",
+      "tijdstip": "18:00",
+      "thuis": "Untouchables Paderborn",
+      "uit": "Dortmund Wanderers",
+      "locatie": "Paderborn",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-05-30",
+      "datum_str": "Samstag, 30. Mai 2026",
+      "tijdstip": "19:00",
+      "thuis": "Hamburg Stealers",
+      "uit": "Hünstetten STORM",
+      "locatie": "Hamburg",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-05-31",
+      "datum_str": "Sonntag, 31. Mai 2026",
+      "tijdstip": "12:00",
+      "thuis": "Gauting Indians",
+      "uit": "Stuttgart Reds",
+      "locatie": "Gauting",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-05-31",
+      "datum_str": "Sonntag, 31. Mai 2026",
+      "tijdstip": "13:00",
+      "thuis": "Hamburg Stealers",
+      "uit": "Hünstetten STORM",
+      "locatie": "Hamburg",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-05-31",
+      "datum_str": "Sonntag, 31. Mai 2026",
+      "tijdstip": "15:00",
+      "thuis": "Dortmund Wanderers",
+      "uit": "Untouchables Paderborn",
+      "locatie": "Dortmund",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-05",
+      "datum_str": "Freitag, 05. Juni 2026",
+      "tijdstip": "18:00",
+      "thuis": "Bonn Capitals",
+      "uit": "Untouchables Paderborn",
+      "locatie": "Bonn",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-05",
+      "datum_str": "Freitag, 05. Juni 2026",
+      "tijdstip": "19:00",
+      "thuis": "Mainz Athletics",
+      "uit": "Gauting Indians",
+      "locatie": "Mainz",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-05",
+      "datum_str": "Freitag, 05. Juni 2026",
+      "tijdstip": "19:00",
+      "thuis": "Heidenheim Heideköpfe",
+      "uit": "Guggenberger Legionäre",
+      "locatie": "Heidenheim an der Brenz",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-06",
+      "datum_str": "Samstag, 06. Juni 2026",
+      "tijdstip": "13:00",
+      "thuis": "Mainz Athletics",
+      "uit": "Gauting Indians",
+      "locatie": "Mainz",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-06",
+      "datum_str": "Samstag, 06. Juni 2026",
+      "tijdstip": "13:00",
+      "thuis": "Heidenheim Heideköpfe",
+      "uit": "Guggenberger Legionäre",
+      "locatie": "Heidenheim an der Brenz",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-06",
+      "datum_str": "Samstag, 06. Juni 2026",
+      "tijdstip": "14:00",
+      "thuis": "Hünstetten STORM",
+      "uit": "Dortmund Wanderers",
+      "locatie": "Hünstetten",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-06",
+      "datum_str": "Samstag, 06. Juni 2026",
+      "tijdstip": "18:00",
+      "thuis": "München-Haar Disciples",
+      "uit": "Stuttgart Reds",
+      "locatie": "Haar",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-06",
+      "datum_str": "Samstag, 06. Juni 2026",
+      "tijdstip": "19:00",
+      "thuis": "Untouchables Paderborn",
+      "uit": "Bonn Capitals",
+      "locatie": "Paderborn",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-06",
+      "datum_str": "Samstag, 06. Juni 2026",
+      "tijdstip": "19:00",
+      "thuis": "Hamburg Stealers",
+      "uit": "Cologne Cardinals",
+      "locatie": "Hamburg",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-07",
+      "datum_str": "Sonntag, 07. Juni 2026",
+      "tijdstip": "12:00",
+      "thuis": "München-Haar Disciples",
+      "uit": "Stuttgart Reds",
+      "locatie": "Haar",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-07",
+      "datum_str": "Sonntag, 07. Juni 2026",
+      "tijdstip": "13:00",
+      "thuis": "Hamburg Stealers",
+      "uit": "Cologne Cardinals",
+      "locatie": "Hamburg",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-07",
+      "datum_str": "Sonntag, 07. Juni 2026",
+      "tijdstip": "14:00",
+      "thuis": "Hünstetten STORM",
+      "uit": "Dortmund Wanderers",
+      "locatie": "Hünstetten",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-12",
+      "datum_str": "Freitag, 12. Juni 2026",
+      "tijdstip": "18:00",
+      "thuis": "München-Haar Disciples",
+      "uit": "Guggenberger Legionäre",
+      "locatie": "Haar",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-12",
+      "datum_str": "Freitag, 12. Juni 2026",
+      "tijdstip": "19:00",
+      "thuis": "Stuttgart Reds",
+      "uit": "Mainz Athletics",
+      "locatie": "Stuttgart",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-13",
+      "datum_str": "Samstag, 13. Juni 2026",
+      "tijdstip": "13:00",
+      "thuis": "Stuttgart Reds",
+      "uit": "Mainz Athletics",
+      "locatie": "Stuttgart",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-13",
+      "datum_str": "Samstag, 13. Juni 2026",
+      "tijdstip": "14:00",
+      "thuis": "Hünstetten STORM",
+      "uit": "Cologne Cardinals",
+      "locatie": "Hünstetten",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-13",
+      "datum_str": "Samstag, 13. Juni 2026",
+      "tijdstip": "14:00",
+      "thuis": "Guggenberger Legionäre",
+      "uit": "München-Haar Disciples",
+      "locatie": "Regensburg",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-13",
+      "datum_str": "Samstag, 13. Juni 2026",
+      "tijdstip": "16:00",
+      "thuis": "Gauting Indians",
+      "uit": "Heidenheim Heideköpfe",
+      "locatie": "Gauting",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-13",
+      "datum_str": "Samstag, 13. Juni 2026",
+      "tijdstip": "17:00",
+      "thuis": "Dortmund Wanderers",
+      "uit": "Bonn Capitals",
+      "locatie": "Dortmund",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-13",
+      "datum_str": "Samstag, 13. Juni 2026",
+      "tijdstip": "18:00",
+      "thuis": "Untouchables Paderborn",
+      "uit": "Hamburg Stealers",
+      "locatie": "Paderborn",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-14",
+      "datum_str": "Sonntag, 14. Juni 2026",
+      "tijdstip": "12:00",
+      "thuis": "Gauting Indians",
+      "uit": "Heidenheim Heideköpfe",
+      "locatie": "Gauting",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-14",
+      "datum_str": "Sonntag, 14. Juni 2026",
+      "tijdstip": "13:00",
+      "thuis": "Untouchables Paderborn",
+      "uit": "Hamburg Stealers",
+      "locatie": "Paderborn",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-14",
+      "datum_str": "Sonntag, 14. Juni 2026",
+      "tijdstip": "13:00",
+      "thuis": "Cologne Cardinals",
+      "uit": "Hünstetten STORM",
+      "locatie": "Köln",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-14",
+      "datum_str": "Sonntag, 14. Juni 2026",
+      "tijdstip": "14:00",
+      "thuis": "Bonn Capitals",
+      "uit": "Dortmund Wanderers",
+      "locatie": "Bonn",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-19",
+      "datum_str": "Freitag, 19. Juni 2026",
+      "tijdstip": "19:00",
+      "thuis": "Mainz Athletics",
+      "uit": "Heidenheim Heideköpfe",
+      "locatie": "Mainz",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-19",
+      "datum_str": "Freitag, 19. Juni 2026",
+      "tijdstip": "19:00",
+      "thuis": "Guggenberger Legionäre",
+      "uit": "Stuttgart Reds",
+      "locatie": "Regensburg",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-20",
+      "datum_str": "Samstag, 20. Juni 2026",
+      "tijdstip": "13:00",
+      "thuis": "Mainz Athletics",
+      "uit": "Heidenheim Heideköpfe",
+      "locatie": "Mainz",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-20",
+      "datum_str": "Samstag, 20. Juni 2026",
+      "tijdstip": "14:00",
+      "thuis": "Hünstetten STORM",
+      "uit": "Untouchables Paderborn",
+      "locatie": "Hünstetten",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-20",
+      "datum_str": "Samstag, 20. Juni 2026",
+      "tijdstip": "14:00",
+      "thuis": "Guggenberger Legionäre",
+      "uit": "Stuttgart Reds",
+      "locatie": "Regensburg",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-20",
+      "datum_str": "Samstag, 20. Juni 2026",
+      "tijdstip": "15:00",
+      "thuis": "Bonn Capitals",
+      "uit": "Hamburg Stealers",
+      "locatie": "Bonn",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-20",
+      "datum_str": "Samstag, 20. Juni 2026",
+      "tijdstip": "16:00",
+      "thuis": "München-Haar Disciples",
+      "uit": "Gauting Indians",
+      "locatie": "Haar",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-20",
+      "datum_str": "Samstag, 20. Juni 2026",
+      "tijdstip": "17:00",
+      "thuis": "Dortmund Wanderers",
+      "uit": "Cologne Cardinals",
+      "locatie": "Dortmund",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-21",
+      "datum_str": "Sonntag, 21. Juni 2026",
+      "tijdstip": "12:00",
+      "thuis": "Bonn Capitals",
+      "uit": "Hamburg Stealers",
+      "locatie": "Bonn",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-21",
+      "datum_str": "Sonntag, 21. Juni 2026",
+      "tijdstip": "12:00",
+      "thuis": "München-Haar Disciples",
+      "uit": "Gauting Indians",
+      "locatie": "Haar",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-21",
+      "datum_str": "Sonntag, 21. Juni 2026",
+      "tijdstip": "14:00",
+      "thuis": "Hünstetten STORM",
+      "uit": "Untouchables Paderborn",
+      "locatie": "Hünstetten",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-21",
+      "datum_str": "Sonntag, 21. Juni 2026",
+      "tijdstip": "14:00",
+      "thuis": "Cologne Cardinals",
+      "uit": "Dortmund Wanderers",
+      "locatie": "Köln",
+      "divisie": "Nord"
+    }
+  ]
 }
