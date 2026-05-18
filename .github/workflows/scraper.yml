@@ -2,11 +2,11 @@ name: DBL Schedule Scraper
 
 on:
   schedule:
-    - cron: '0 * * * *'     # elk uur
-    - cron: '0 22 * * 5'    # vrijdagavond 23:00 NL
-    - cron: '0 17 * * 6'    # zaterdagmiddag 18:00 NL
-    - cron: '0 22 * * 6'    # zaterdagavond 23:00 NL
-    - cron: '0 16 * * 0'    # zondagmiddag 17:00 NL
+    - cron: '0 * * * *'
+    - cron: '0 22 * * 5'
+    - cron: '0 17 * * 6'
+    - cron: '0 22 * * 6'
+    - cron: '0 16 * * 0'
   workflow_dispatch:
 
 permissions:
@@ -16,11 +16,9 @@ jobs:
   scrape:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Python instellen
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -29,8 +27,11 @@ jobs:
           pip install playwright
           playwright install chromium --with-deps
 
-      - name: Scraper uitvoeren
-        run: python scraper.py
+      - name: Uitslagen scrapen
+        run: python scraper_uitslagen.py
+
+      - name: Programma scrapen
+        run: python scraper_programma.py
 
       - name: JSON committen
         run: |
