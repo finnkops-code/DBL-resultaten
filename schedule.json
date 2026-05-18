@@ -1,170 +1,18 @@
 {
-  "bijgewerkt": "2026-05-18T07:42:21Z",
+  "bijgewerkt": "2026-05-18T07:47:24Z",
   "bron": "https://www.baseball.de/saison/spielplaene",
-  "speelweek": {
-    "van": "2026-05-15",
-    "tot": "2026-05-17"
+  "uitslagen_week": {
+    "label": "15–17 mei",
+    "week": 20,
+    "year": 2026
+  },
+  "programma_week": {
+    "label": "29–31 mei",
+    "week": 22,
+    "year": 2026
   },
   "uitslagen": [],
   "programma": [
-    {
-      "datum": "2026-05-29",
-      "datum_str": "Freitag, 29. Mai 2026",
-      "tijdstip": "19:00",
-      "thuis": "Bonn Capitals",
-      "uit": "Cologne Cardinals",
-      "score_thuis": null,
-      "score_uit": null,
-      "locatie": "Bonn",
-      "divisie": "Nord",
-      "gespeeld": false,
-      "live": false
-    },
-    {
-      "datum": "2026-05-29",
-      "datum_str": "Freitag, 29. Mai 2026",
-      "tijdstip": "19:00",
-      "thuis": "Mainz Athletics",
-      "uit": "Guggenberger Legionäre",
-      "score_thuis": null,
-      "score_uit": null,
-      "locatie": "Mainz",
-      "divisie": "Süd",
-      "gespeeld": false,
-      "live": false
-    },
-    {
-      "datum": "2026-05-29",
-      "datum_str": "Freitag, 29. Mai 2026",
-      "tijdstip": "19:00",
-      "thuis": "Heidenheim Heideköpfe",
-      "uit": "München-Haar Disciples",
-      "score_thuis": null,
-      "score_uit": null,
-      "locatie": "Heidenheim an der Brenz",
-      "divisie": "Süd",
-      "gespeeld": false,
-      "live": false
-    },
-    {
-      "datum": "2026-05-30",
-      "datum_str": "Samstag, 30. Mai 2026",
-      "tijdstip": "13:00",
-      "thuis": "Mainz Athletics",
-      "uit": "Guggenberger Legionäre",
-      "score_thuis": null,
-      "score_uit": null,
-      "locatie": "Mainz",
-      "divisie": "Süd",
-      "gespeeld": false,
-      "live": false
-    },
-    {
-      "datum": "2026-05-30",
-      "datum_str": "Samstag, 30. Mai 2026",
-      "tijdstip": "14:00",
-      "thuis": "Cologne Cardinals",
-      "uit": "Bonn Capitals",
-      "score_thuis": null,
-      "score_uit": null,
-      "locatie": "Köln",
-      "divisie": "Nord",
-      "gespeeld": false,
-      "live": false
-    },
-    {
-      "datum": "2026-05-30",
-      "datum_str": "Samstag, 30. Mai 2026",
-      "tijdstip": "14:00",
-      "thuis": "Heidenheim Heideköpfe",
-      "uit": "München-Haar Disciples",
-      "score_thuis": null,
-      "score_uit": null,
-      "locatie": "Heidenheim an der Brenz",
-      "divisie": "Süd",
-      "gespeeld": false,
-      "live": false
-    },
-    {
-      "datum": "2026-05-30",
-      "datum_str": "Samstag, 30. Mai 2026",
-      "tijdstip": "16:00",
-      "thuis": "Gauting Indians",
-      "uit": "Stuttgart Reds",
-      "score_thuis": null,
-      "score_uit": null,
-      "locatie": "Gauting",
-      "divisie": "Süd",
-      "gespeeld": false,
-      "live": false
-    },
-    {
-      "datum": "2026-05-30",
-      "datum_str": "Samstag, 30. Mai 2026",
-      "tijdstip": "18:00",
-      "thuis": "Untouchables Paderborn",
-      "uit": "Dortmund Wanderers",
-      "score_thuis": null,
-      "score_uit": null,
-      "locatie": "Paderborn",
-      "divisie": "Nord",
-      "gespeeld": false,
-      "live": false
-    },
-    {
-      "datum": "2026-05-30",
-      "datum_str": "Samstag, 30. Mai 2026",
-      "tijdstip": "19:00",
-      "thuis": "Hamburg Stealers",
-      "uit": "Hünstetten STORM",
-      "score_thuis": null,
-      "score_uit": null,
-      "locatie": "Hamburg",
-      "divisie": "Nord",
-      "gespeeld": false,
-      "live": false
-    },
-    {
-      "datum": "2026-05-31",
-      "datum_str": "Sonntag, 31. Mai 2026",
-      "tijdstip": "12:00",
-      "thuis": "Gauting Indians",
-      "uit": "Stuttgart Reds",
-      "score_thuis": null,
-      "score_uit": null,
-      "locatie": "Gauting",
-      "divisie": "Süd",
-      "gespeeld": false,
-      "live": false
-    },
-    {
-      "datum": "2026-05-31",
-      "datum_str": "Sonntag, 31. Mai 2026",
-      "tijdstip": "13:00",
-      "thuis": "Hamburg Stealers",
-      "uit": "Hünstetten STORM",
-      "score_thuis": null,
-      "score_uit": null,
-      "locatie": "Hamburg",
-      "divisie": "Nord",
-      "gespeeld": false,
-      "live": false
-    },
-    {
-      "datum": "2026-05-31",
-      "datum_str": "Sonntag, 31. Mai 2026",
-      "tijdstip": "15:00",
-      "thuis": "Dortmund Wanderers",
-      "uit": "Untouchables Paderborn",
-      "score_thuis": null,
-      "score_uit": null,
-      "locatie": "Dortmund",
-      "divisie": "Nord",
-      "gespeeld": false,
-      "live": false
-    }
-  ],
-  "alle_wedstrijden": [
     {
       "datum": "2026-05-29",
       "datum_str": "Freitag, 29. Mai 2026",
