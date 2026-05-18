@@ -1,9 +1,10 @@
 """
-DBL Programma Scraper — Playwright (headless Chrome)
+DBL Schedule Scraper — Playwright (headless Chrome)
 
-Zoekt de eerstvolgende speelweek uit de WEEKS lijst waarvan de
-vrijdag nog in de toekomst ligt, en laadt die specifieke week-URL.
-Schrijft alleen de "programma" sleutel in schedule.json.
+Twee paginaladingen in één browser:
+  1. Standaard URL (geen week)  → data-state="planned"  → programma
+  2. Meest recente week-URL     → data-state="played"   → uitslagen
+     Als week leeg is, een week terug (max 4 pogingen)
 
 Installatie (eenmalig):
     pip install playwright
@@ -11,7 +12,6 @@ Installatie (eenmalig):
 """
 
 import json
-import os
 import re
 import datetime as dt
 from datetime import timezone, timedelta
@@ -158,24 +158,23 @@ def process(raw_games):
     return games
 
 
-def next_weeks():
-    """
-    Geeft toekomstige weken terug op volgorde.
-    Probeert meerdere weken vooruit als een week geen planned wedstrijden heeft
-    (bijv. door een vrije week of afgelasting).
-    """
+def past_weeks():
+    """Afgelopen weken, meest recent eerst."""
     today = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
-    return [
+    result = [
         w for w in WEEKS
-        if dt.date.fromisocalendar(w["year"], w["week"], 5) > today
+        if dt.date.fromisocalendar(w["year"], w["week"], 5) + timedelta(days=2) < today
     ]
+    result.reverse()
+    return result
 
 
 def main():
-    print(f"DBL programma scraper — {dt.datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
+    print(f"DBL scraper gestart — {dt.datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}\n")
 
     programma      = []
-    programma_week = None
+    uitslagen      = []
+    uitslagen_week = None
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -189,52 +188,65 @@ def main():
         )
         page = context.new_page()
 
-        # Probeer toekomstige weken totdat we planned wedstrijden vinden
-        for w in next_weeks()[:4]:
+        # --- Stap 1: programma via standaard URL ---
+        # De site toont hier automatisch de eerstvolgende speelweek
+        print(f"Programma: {BASE_URL}")
+        try:
+            page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30000)
+            page.wait_for_selector("div.game", timeout=12000)
+            raw      = page.evaluate(EXTRACT_JS)
+            games    = process(raw)
+            programma = sorted(
+                [g for g in games if not g["gespeeld"]],
+                key=lambda g: (g["datum"] or "", g["tijdstip"] or "")
+            )
+            print(f"→ {len(programma)} geplande wedstrijden\n")
+        except Exception as e:
+            print(f"⚠️  Fout bij programma: {e}\n")
+
+        # --- Stap 2: uitslagen via week-URL, teruglopend ---
+        for w in past_weeks()[:4]:
             url = f"{BASE_URL}?year={w['year']}&week={w['week']}"
-            print(f"  Probeer week {w['week']} ({w['label']}): {url}")
+            print(f"Uitslagen week {w['week']} ({w['label']}): {url}")
             try:
                 page.goto(url, wait_until="domcontentloaded", timeout=30000)
                 page.wait_for_selector("div.game", timeout=12000)
+                raw    = page.evaluate(EXTRACT_JS)
+                games  = process(raw)
+                played = [g for g in games if g["gespeeld"]]
+                print(f"→ {len(played)} gespeelde wedstrijden")
+                if played:
+                    uitslagen      = sorted(played, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
+                    uitslagen_week = w
+                    break
             except Exception as e:
-                print(f"  ⚠️  Fout: {e}")
+                print(f"⚠️  Fout: {e}")
                 continue
-
-            raw    = page.evaluate(EXTRACT_JS)
-            games  = process(raw)
-            planned = [g for g in games if not g["gespeeld"]]
-            print(f"  → {len(planned)} geplande wedstrijden")
-
-            if planned:
-                programma      = sorted(planned, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
-                programma_week = w
-                break
 
         browser.close()
 
     # Debug
-    print(f"\nProgramma week {programma_week['week'] if programma_week else '?'} "
-          f"({programma_week['label'] if programma_week else '-'}) — {len(programma)} wedstrijden:")
+    print(f"\nUitslagen ({len(uitslagen)}):")
+    for u in uitslagen:
+        print(f"  {u['datum']} {u['tijdstip']}  "
+              f"{u['uit']} {u['score_uit']}–{u['score_thuis']} {u['thuis']}  [{u['divisie']}]")
+
+    print(f"\nProgramma ({len(programma)}):")
     for p in programma:
         print(f"  {p['datum']} {p['tijdstip']}  {p['uit']} @ {p['thuis']}  [{p['divisie']}]")
 
-    # Lees bestaande JSON, update alleen "programma"
-    data = {}
-    if os.path.exists(JSON_FILE):
-        with open(JSON_FILE, encoding="utf-8") as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                pass
-
-    data["bijgewerkt_programma"] = dt.datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    data["programma_week"]       = programma_week
-    data["programma"]            = programma
+    output = {
+        "bijgewerkt":     dt.datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "bron":           BASE_URL,
+        "uitslagen_week": uitslagen_week,
+        "uitslagen":      uitslagen,
+        "programma":      programma,
+    }
 
     with open(JSON_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        json.dump(output, f, ensure_ascii=False, indent=2)
 
-    print(f"\n✅ {JSON_FILE} bijgewerkt — {len(programma)} wedstrijden")
+    print(f"\n✅ {JSON_FILE} opgeslagen — {len(uitslagen)} uitslagen, {len(programma)} programma")
 
 
 if __name__ == "__main__":
