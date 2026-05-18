@@ -3,10 +3,10 @@ name: DBL Schedule Scraper
 on:
   schedule:
     - cron: '0 * * * *'     # elk uur
-    - cron: '0 22 * * 5'    # vrijdagavond 23:00 NL (na avondwedstrijden)
-    - cron: '0 17 * * 6'    # zaterdagmiddag 18:00 NL (na middag-games)
-    - cron: '0 22 * * 6'    # zaterdagavond 23:00 NL (na avondwedstrijden)
-    - cron: '0 16 * * 0'    # zondagmiddag 17:00 NL (na zondagwedstrijden)
+    - cron: '0 22 * * 5'    # vrijdagavond 23:00 NL
+    - cron: '0 17 * * 6'    # zaterdagmiddag 18:00 NL
+    - cron: '0 22 * * 6'    # zaterdagavond 23:00 NL
+    - cron: '0 16 * * 0'    # zondagmiddag 17:00 NL
   workflow_dispatch:
 
 permissions:
@@ -23,6 +23,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
+      - name: Dependencies installeren
+        run: |
+          pip install playwright
+          playwright install chromium --with-deps
 
       - name: Schema scrapen
         run: python scraper.py
