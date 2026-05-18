@@ -1,6 +1,9 @@
 """
 DBL Schedule Scraper — Playwright (headless Chrome)
-Laadt twee pagina's: huidige speelweek (programma) + vorige speelweek (uitslagen).
+
+Laadt twee gerichte week-URLs:
+  - Vorige speelweek  → uitslagen (data-state="played")
+  - Volgende speelweek → programma (data-state="planned")
 
 Installatie (eenmalig):
     pip install playwright
@@ -9,11 +12,13 @@ Installatie (eenmalig):
 
 import json
 import re
-from datetime import datetime, timezone, timedelta
+import datetime as dt
+from datetime import timezone, timedelta
 from playwright.sync_api import sync_playwright
 
 BASE_URL = "https://www.baseball.de/saison/spielplaene"
 
+# Alle speelweken van het seizoen op volgorde
 WEEKS = [
     {"label": "10–12 apr", "week": 14, "year": 2026},
     {"label": "17–19 apr", "week": 16, "year": 2026},
@@ -34,6 +39,31 @@ MAANDEN_DE = {
 }
 
 
+def week_friday(week_entry):
+    """Geeft de vrijdag van een week-entry als date object."""
+    return dt.date.fromisocalendar(week_entry["year"], week_entry["week"], 5)
+
+
+def determine_weeks():
+    """
+    Bepaalt welke week we voor uitslagen en programma moeten laden.
+    Vergelijkt de vrijdag van elke week met vandaag.
+
+    - Uitslagen  = de meest recente week waarvan de vrijdag al geweest is
+    - Programma  = de eerstvolgende week waarvan de vrijdag nog in de toekomst ligt
+    """
+    now   = dt.datetime.now(timezone.utc) + timedelta(hours=2)
+    today = now.date()
+
+    afgelopen  = [w for w in WEEKS if week_friday(w) <= today]
+    toekomstig = [w for w in WEEKS if week_friday(w) > today]
+
+    uitslagen_week = afgelopen[-1]  if afgelopen  else None
+    programma_week = toekomstig[0] if toekomstig else None
+
+    return uitslagen_week, programma_week
+
+
 def parse_date_str(date_str):
     """'Freitag, 29. Mai 2026' → date object"""
     if not date_str:
@@ -47,7 +77,7 @@ def parse_date_str(date_str):
     if not month:
         return None
     try:
-        return datetime(year, month, day).date()
+        return dt.datetime(year, month, day).date()
     except ValueError:
         return None
 
@@ -61,47 +91,15 @@ def parse_score(text):
         return None
 
 
-def speelweek_bounds():
-    """
-    Geeft de vrijdag en zondag van de meest recente DBL-speelweek.
-    - Ma t/m do → vorige week vr t/m zo  (uitslagen tonen)
-    - Vr t/m zo → deze week vr t/m zo    (live/gepland)
-    """
-    now     = datetime.now(timezone.utc) + timedelta(hours=2)
-    today   = now.date()
-    weekday = today.weekday()
-    days_since_friday = (weekday - 4) % 7
-    friday  = today - timedelta(days=days_since_friday)
-    sunday  = friday + timedelta(days=2)
-    return friday, sunday
-
-
-def vorige_speelweek(friday):
-    """Geeft de week-entry uit WEEKS die het dichtst vóór de huidige friday ligt."""
-    friday_iso_week = friday.isocalendar()[1]
-    friday_year     = friday.year
-
-    # Zoek de vorige week in onze WEEKS lijst
-    candidates = [
-        w for w in WEEKS
-        if (w["year"] < friday_year)
-        or (w["year"] == friday_year and w["week"] < friday_iso_week)
-    ]
-    return candidates[-1] if candidates else None
-
-
 def extract_games(page):
-    """Extraheert alle div.game elementen van de geladen pagina."""
+    """Extraheert alle div.game elementen van de geladen pagina via JS in de browser."""
     return page.evaluate("""
     () => {
         const results = [];
 
         document.querySelectorAll('div.game').forEach(card => {
 
-            // data-state: "planned" | "live" | "played"
-            const state = card.getAttribute('data-state') || '';
-
-            // Unix timestamp voor datum/tijd fallback
+            const state    = card.getAttribute('data-state') || '';
             const dataStart = card.getAttribute('data-start');
             const timestamp = dataStart ? parseInt(dataStart) * 1000 : null;
 
@@ -148,16 +146,9 @@ def extract_games(page):
             const awayScoreRaw = awayScoreEl ? awayScoreEl.textContent.trim() : null;
 
             results.push({
-                state,
-                timestamp,
-                division,
-                dateStr,
-                time,
-                location,
-                homeTeam,
-                awayTeam,
-                homeScoreRaw,
-                awayScoreRaw,
+                state, timestamp, division, dateStr,
+                time, location, homeTeam, awayTeam,
+                homeScoreRaw, awayScoreRaw,
             });
         });
 
@@ -167,7 +158,7 @@ def extract_games(page):
 
 
 def process_raw(raw_games):
-    """Verwerkt ruwe browser-data naar schone game-dicts."""
+    """Verwerkt ruwe browser-data naar schone game-dicts, dedupliceert."""
     games = []
     seen  = set()
 
@@ -185,12 +176,12 @@ def process_raw(raw_games):
         timestamp = r.get("timestamp")
         game_date = parse_date_str(date_str)
 
-        # Fallback op Unix timestamp als datum niet parsed
+        # Fallback op Unix timestamp
         if not game_date and timestamp:
-            dt = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc) + timedelta(hours=2)
-            game_date = dt.date()
+            d = dt.datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc) + timedelta(hours=2)
+            game_date = d.date()
             if not time_str:
-                time_str = dt.strftime("%H:%M")
+                time_str = d.strftime("%H:%M")
 
         score_home = parse_score(r.get("homeScoreRaw"))
         score_away = parse_score(r.get("awayScoreRaw"))
@@ -222,33 +213,38 @@ def process_raw(raw_games):
 
 def scrape_url(page, url, label):
     """Laadt één URL en geeft verwerkte games terug."""
-    print(f"  Laden: {url}  ({label})")
+    print(f"  [{label}] {url}")
     try:
         page.goto(url, wait_until="domcontentloaded", timeout=30000)
         page.wait_for_selector("div.game", timeout=10000)
     except Exception as e:
-        print(f"  ⚠️  Fout: {e}")
+        print(f"  ⚠️  Fout bij laden: {e}")
         return []
+
     raw   = extract_games(page)
     games = process_raw(raw)
+
     played   = sum(1 for g in games if g["gespeeld"])
     upcoming = sum(1 for g in games if not g["gespeeld"] and not g["live"])
     live     = sum(1 for g in games if g["live"])
-    print(f"  → {len(games)} wedstrijden — {played} gespeeld, {upcoming} gepland, {live} live")
+    print(f"  → {len(games)} wedstrijden — {played} gespeeld / {upcoming} gepland / {live} live")
     return games
 
 
 def main():
-    print(f"DBL scraper gestart — {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
+    now_str = dt.datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    print(f"DBL scraper gestart — {now_str}\n")
 
-    friday, sunday = speelweek_bounds()
-    today = (datetime.now(timezone.utc) + timedelta(hours=2)).date()
-    print(f"Huidige speelweek : {friday} (vr) t/m {sunday} (zo)")
+    uitslagen_week, programma_week = determine_weeks()
 
-    vorige = vorige_speelweek(friday)
-    if vorige:
-        print(f"Vorige speelweek  : week {vorige['week']} ({vorige['label']})")
+    if uitslagen_week:
+        print(f"Uitslagen week : {uitslagen_week['week']} ({uitslagen_week['label']})")
+    if programma_week:
+        print(f"Programma week : {programma_week['week']} ({programma_week['label']})")
     print()
+
+    uitslagen = []
+    programma = []
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -262,88 +258,51 @@ def main():
         )
         page = context.new_page()
 
-        # Pagina 1: huidige week (programma + eventueel live)
-        huidige_url = BASE_URL
-        alle_games = scrape_url(page, huidige_url, "huidige week")
+        # Laad uitslagen-week
+        if uitslagen_week:
+            url = f"{BASE_URL}?year={uitslagen_week['year']}&week={uitslagen_week['week']}"
+            games = scrape_url(page, url, "uitslagen")
+            uitslagen = [g for g in games if g["gespeeld"]]
 
-        # Pagina 2: vorige speelweek (uitslagen)
-        if vorige:
-            vorige_url = f"{BASE_URL}?year={vorige['year']}&week={vorige['week']}"
-            vorige_games = scrape_url(page, vorige_url, f"vorige week ({vorige['label']})")
-
-            # Voeg toe, dedupliceer
-            existing_keys = {(g["thuis"], g["uit"], g["datum"], g["tijdstip"]) for g in alle_games}
-            for g in vorige_games:
-                key = (g["thuis"], g["uit"], g["datum"], g["tijdstip"])
-                if key not in existing_keys:
-                    alle_games.append(g)
-                    existing_keys.add(key)
+        # Laad programma-week
+        if programma_week:
+            url = f"{BASE_URL}?year={programma_week['year']}&week={programma_week['week']}"
+            games = scrape_url(page, url, "programma")
+            programma = [g for g in games if not g["gespeeld"]]
 
         browser.close()
 
-    alle_games.sort(key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
+    uitslagen.sort(key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
+    programma.sort(key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
 
-    played   = sum(1 for g in alle_games if g["gespeeld"])
-    upcoming = sum(1 for g in alle_games if not g["gespeeld"] and not g["live"])
-    live     = sum(1 for g in alle_games if g["live"])
-    print(f"\nTotaal: {len(alle_games)} wedstrijden — {played} gespeeld, {upcoming} gepland, {live} live")
-
-    # Uitslagen: data-state="played" in de vorige speelweek
-    # Bepaal de bounds van de vorige speelweek
-    if vorige:
-        # Bereken vrijdag van de vorige speelweek op basis van week-nummer
-        import datetime as dt_module
-        vorige_friday = dt_module.date.fromisocalendar(vorige["year"], vorige["week"], 5)
-        vorige_sunday = vorige_friday + timedelta(days=2)
-    else:
-        vorige_friday = friday
-        vorige_sunday = sunday
-
-    uitslagen = [
-        g for g in alle_games
-        if g["gespeeld"] and g["datum"]
-        and vorige_friday <= datetime.strptime(g["datum"], "%Y-%m-%d").date() <= vorige_sunday
-    ]
-
-    # Programma: toekomstige wedstrijden, max 15
-    programma = [
-        g for g in alle_games
-        if not g["gespeeld"] and not g["live"] and g["datum"]
-        and datetime.strptime(g["datum"], "%Y-%m-%d").date() > today
-    ][:15]
-
-    # Debug
-    print(f"\nUitslagen ({vorige_friday} – {vorige_sunday}):")
+    # Debug output
+    print(f"\nUitslagen ({len(uitslagen)}):")
     if uitslagen:
         for u in uitslagen:
             print(f"  {u['datum']} {u['tijdstip']}  "
                   f"{u['uit']} {u['score_uit']}–{u['score_thuis']} {u['thuis']}  [{u['divisie']}]")
     else:
-        print("  (geen gespeelde wedstrijden gevonden)")
+        print("  (geen)")
 
-    print(f"\nProgramma (eerstvolgende {len(programma)}):")
+    print(f"\nProgramma ({len(programma)}):")
     for p in programma:
         print(f"  {p['datum']} {p['tijdstip']}  {p['uit']} @ {p['thuis']}  [{p['divisie']}]")
 
     output = {
-        "bijgewerkt":       datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "bron":             BASE_URL,
-        "speelweek": {
-            "van": str(friday),
-            "tot": str(sunday),
-        },
-        "uitslagen":        uitslagen,
-        "programma":        programma,
-        "alle_wedstrijden": alle_games,
+        "bijgewerkt": dt.datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "bron":       BASE_URL,
+        "uitslagen_week": uitslagen_week,
+        "programma_week": programma_week,
+        "uitslagen":  uitslagen,
+        "programma":  programma,
     }
 
     with open("schedule.json", "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
     print(f"\n✅ schedule.json opgeslagen")
-    print(f"   Uitslagen vorige speelweek : {len(uitslagen)}")
-    print(f"   Aankomende wedstrijden     : {len(programma)}")
-    print(f"   Totaal alle wedstrijden    : {len(alle_games)}")
+    print(f"   Uitslagen : {len(uitslagen)}")
+    print(f"   Programma : {len(programma)}")
 
 
 if __name__ == "__main__":
