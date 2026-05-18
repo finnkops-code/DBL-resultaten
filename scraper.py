@@ -1,9 +1,6 @@
 """
 DBL Scraper — uitslagen + programma in één run, één JSON.
-
-Uitslagen : BASE_URL zonder parameters → data-state "played" / "live"
-Programma : BASE_URL?year=…&week=… → data-state "planned"
-             Wacht op networkidle zodat de AJAX-call klaar is.
+Gebaseerd op de originele werkende scraper_uitslagen.py logica.
 """
 
 import json, os, re, datetime as dt
@@ -82,57 +79,72 @@ def parse_score(t):
     try: return int(str(t).strip())
     except: return None
 
-def scrape_page(page, url):
-    """Laad pagina en wacht tot AJAX klaar is én div.game zichtbaar is."""
-    print(f"  Laden: {url}")
-    page.goto(url, wait_until="networkidle", timeout=45000)
-    page.wait_for_selector("div.game", timeout=15000)
-    raw = page.evaluate(EXTRACT_JS)
-    print(f"  → {len(raw)} kaarten gevonden, states: { {r['state'] for r in raw} }")
-    return raw
+def process_uitslagen(raw):
+    games, seen = [], set()
+    for r in raw:
+        h, a = r.get("homeTeam"), r.get("awayTeam")
+        if not h or not a: continue
+        if r.get("state") not in ("played", "live"): continue
+        date_str, time_str = r.get("dateStr"), r.get("time")
+        game_date = parse_date_str(date_str)
+        if not game_date and r.get("timestamp"):
+            d = dt.datetime.fromtimestamp(r["timestamp"] / 1000, tz=timezone.utc) + timedelta(hours=2)
+            game_date = d.date()
+            if not time_str: time_str = d.strftime("%H:%M")
+        key = (h, a, str(game_date), time_str)
+        if key in seen: continue
+        seen.add(key)
+        games.append({
+            "datum":       str(game_date) if game_date else None,
+            "datum_str":   date_str,
+            "tijdstip":    time_str,
+            "thuis":       h, "uit": a,
+            "score_thuis": parse_score(r.get("homeScoreRaw")),
+            "score_uit":   parse_score(r.get("awayScoreRaw")),
+            "locatie":     r.get("location"),
+            "divisie":     r.get("division"),
+            "gespeeld":    True,
+            "live":        r.get("state") == "live",
+        })
+    return sorted(games, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
 
-def to_uitslag(r):
-    date_str, time_str = r.get("dateStr"), r.get("time")
-    game_date = parse_date_str(date_str)
-    if not game_date and r.get("timestamp"):
-        d = dt.datetime.fromtimestamp(r["timestamp"] / 1000, tz=timezone.utc) + timedelta(hours=2)
-        game_date = d.date()
-        if not time_str: time_str = d.strftime("%H:%M")
-    return {
-        "datum":       str(game_date) if game_date else None,
-        "datum_str":   date_str,
-        "tijdstip":    time_str,
-        "thuis":       r["homeTeam"],
-        "uit":         r["awayTeam"],
-        "score_thuis": parse_score(r.get("homeScoreRaw")),
-        "score_uit":   parse_score(r.get("awayScoreRaw")),
-        "locatie":     r.get("location"),
-        "divisie":     r.get("division"),
-        "gespeeld":    True,
-        "live":        r.get("state") == "live",
-    }
-
-def to_programma(r):
-    date_str, time_str = r.get("dateStr"), r.get("time")
-    game_date = parse_date_str(date_str)
-    if not game_date and r.get("timestamp"):
-        d = dt.datetime.fromtimestamp(r["timestamp"] / 1000, tz=timezone.utc) + timedelta(hours=2)
-        game_date = d.date()
-        if not time_str: time_str = d.strftime("%H:%M")
-    return {
-        "datum":     str(game_date) if game_date else None,
-        "datum_str": date_str,
-        "tijdstip":  time_str,
-        "thuis":     r["homeTeam"],
-        "uit":       r["awayTeam"],
-        "locatie":   r.get("location"),
-        "divisie":   r.get("division"),
-    }
+def process_programma(raw):
+    games, seen = [], set()
+    for r in raw:
+        h, a = r.get("homeTeam"), r.get("awayTeam")
+        if not h or not a: continue
+        if r.get("state") not in ("planned", "", None): continue
+        if r.get("state") in ("played", "live"): continue
+        date_str, time_str = r.get("dateStr"), r.get("time")
+        game_date = parse_date_str(date_str)
+        if not game_date and r.get("timestamp"):
+            d = dt.datetime.fromtimestamp(r["timestamp"] / 1000, tz=timezone.utc) + timedelta(hours=2)
+            game_date = d.date()
+            if not time_str: time_str = d.strftime("%H:%M")
+        key = (h, a, str(game_date), time_str)
+        if key in seen: continue
+        seen.add(key)
+        games.append({
+            "datum":     str(game_date) if game_date else None,
+            "datum_str": date_str,
+            "tijdstip":  time_str,
+            "thuis":     h, "uit": a,
+            "locatie":   r.get("location"),
+            "divisie":   r.get("division"),
+        })
+    return sorted(games, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
 
 def main():
     today = (dt.datetime.now(timezone.utc) + timedelta(hours=2)).date()
 
-    komende_weken = [
+    # Afgelopen weken voor uitslagen (zelfde logica als origineel)
+    afgelopen = list(reversed([
+        w for w in WEEKS
+        if dt.date.fromisocalendar(w["year"], w["week"], 7) < today
+    ]))
+
+    # Komende weken voor programma
+    komende = [
         w for w in WEEKS
         if dt.date.fromisocalendar(w["year"], w["week"], 7) >= today
     ]
@@ -141,8 +153,6 @@ def main():
     uitslagen_week = None
     programma      = []
     programma_weken = []
-    seen_u = set()
-    seen_p = set()
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -151,50 +161,39 @@ def main():
             locale="de-DE", viewport={"width": 1280, "height": 800},
         ).new_page()
 
-        # ── 1. UITSLAGEN: geen params → site toont meest recente gespeelde week
+        # ── UITSLAGEN: zelfde aanpak als originele werkende scraper ──
         print("\n=== UITSLAGEN ===")
-        try:
-            raw = scrape_page(page, BASE_URL)
-            for r in raw:
-                if r.get("state") not in ("played", "live"): continue
-                if not r.get("homeTeam") or not r.get("awayTeam"): continue
-                key = (r["homeTeam"], r["awayTeam"], r.get("dateStr"), r.get("time"))
-                if key in seen_u: continue
-                seen_u.add(key)
-                uitslagen.append(to_uitslag(r))
-            uitslagen = sorted(uitslagen, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
-            if uitslagen:
-                uitslagen_week = {"label": "meest recent", "url": BASE_URL}
-            print(f"  → {len(uitslagen)} uitslagen opgehaald")
-        except Exception as e:
-            print(f"  !! Fout bij uitslagen: {e}")
-
-        # ── 2. PROGRAMMA: week-URLs, wacht op networkidle zodat AJAX klaar is
-        print("\n=== PROGRAMMA ===")
-        for w in komende_weken[:4]:
+        for w in afgelopen[:4]:
             url = f"{BASE_URL}?year={w['year']}&week={w['week']}"
-            try:
-                raw = scrape_page(page, url)
-                week_games = []
-                for r in raw:
-                    if r.get("state") != "planned": continue
-                    if not r.get("homeTeam") or not r.get("awayTeam"): continue
-                    key = (r["homeTeam"], r["awayTeam"], r.get("dateStr"), r.get("time"))
-                    if key in seen_p: continue
-                    seen_p.add(key)
-                    week_games.append(to_programma(r))
-                print(f"  → {len(week_games)} geplande wedstrijden ({w['label']})")
-                if week_games:
-                    programma.extend(week_games)
-                    programma_weken.append(w)
-            except Exception as e:
-                print(f"  !! Fout bij {w['label']}: {e}")
+            print(f"Laden: {url}")
+            page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            page.wait_for_selector("div.game", timeout=12000)
+            raw    = page.evaluate(EXTRACT_JS)
+            played = process_uitslagen(raw)
+            print(f"→ {len(raw)} kaarten, {len(played)} gespeeld")
+            if played:
+                uitslagen      = played
+                uitslagen_week = w
+                break
+
+        # ── PROGRAMMA: komende weken, zelfde wachtstrategie ──
+        print("\n=== PROGRAMMA ===")
+        for w in komende[:4]:
+            url = f"{BASE_URL}?year={w['year']}&week={w['week']}"
+            print(f"Laden: {url}")
+            page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            page.wait_for_selector("div.game", timeout=12000)
+            raw   = page.evaluate(EXTRACT_JS)
+            games = process_programma(raw)
+            print(f"→ {len(raw)} kaarten, {len(games)} gepland")
+            if games:
+                programma.extend(games)
+                programma_weken.append(w)
 
         browser.close()
 
-    programma = sorted(programma, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
+    print(f"\nUitslagen: {len(uitslagen)}, Programma: {len(programma)}")
 
-    # ── 3. Alles in één keer naar schedule.json
     now_str = dt.datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     data = {
         "bijgewerkt":      now_str,
@@ -207,7 +206,7 @@ def main():
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-    print(f"\n✅ schedule.json: {len(uitslagen)} uitslagen, {len(programma)} programma")
+    print(f"✅ schedule.json geschreven")
 
 if __name__ == "__main__":
     main()
