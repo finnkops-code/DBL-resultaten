@@ -25,6 +25,30 @@ MAANDEN_DE = {
     "September": 9, "Oktober": 10, "November": 11, "Dezember": 12,
 }
 
+# ── Afkortingen — pas hier aan naar wens ──────────────────────────────────────
+AFKORTINGEN = {
+    "Bonn Capitals":          "BON",
+    "Hamburg Stealers":       "HAM",
+    "Untouchables Paderborn": "PAD",
+    "Cologne Cardinals":      "CGN",
+    "Hünstetten STORM":       "STM",
+    "Dortmund Wanderers":     "DOR",
+    "Guggenberger Legionäre": "REG",
+    "Heidenheim Heideköpfe":  "HDH",
+    "Stuttgart Reds":         "STR",
+    "Mainz Athletics":        "MNZ",
+    "Gauting Indians":        "GAU",
+    "München-Haar Disciples": "MUC",
+}
+
+def afkorting(team):
+    if team in AFKORTINGEN:
+        return AFKORTINGEN[team]
+    for naam, afk in AFKORTINGEN.items():
+        if naam.lower() in team.lower() or team.lower() in naam.lower():
+            return afk
+    return team[:3].upper()
+
 EXTRACT_JS = """
 () => {
     const results = [];
@@ -89,7 +113,7 @@ def main():
             locale="de-DE", viewport={"width": 1280, "height": 800},
         ).new_page()
 
-        # ── UITSLAGEN: geen params, toont meest recente gespeelde week ──
+        # ── UITSLAGEN ──────────────────────────────────────────────────────────
         print(f"\nUitslagen laden: {BASE_URL}")
         page.goto(BASE_URL, wait_until="domcontentloaded", timeout=30000)
         page.wait_for_selector("div.game", timeout=12000)
@@ -113,36 +137,40 @@ def main():
             if key in seen: continue
             seen.add(key)
             uitslagen.append({
-                "datum": str(game_date) if game_date else None,
-                "datum_str": date_str, "tijdstip": time_str,
-                "thuis": h, "uit": a,
-                "score_thuis": score_t, "score_uit": score_u,
-                "locatie": r.get("location"), "divisie": r.get("division"),
-                "gespeeld": True, "live": r.get("state") == "live",
+                "datum":        str(game_date) if game_date else None,
+                "datum_str":    date_str,
+                "tijdstip":     time_str,
+                "thuis":        h,
+                "thuis_afk":    afkorting(h),
+                "uit":          a,
+                "uit_afk":      afkorting(a),
+                "score_thuis":  score_t,
+                "score_uit":    score_u,
+                "locatie":      r.get("location"),
+                "divisie":      r.get("division"),
+                "gespeeld":     True,
+                "live":         r.get("state") == "live",
             })
 
         uitslagen = sorted(uitslagen, key=lambda g: (g["datum"] or "", g["tijdstip"] or ""))
         print(f"→ {len(uitslagen)} uitslagen")
 
-        # ── PROGRAMMA: alleen de eerstvolgende speelweek ──
-        # Zoek de eerste week waarvan de vrijdag (dag 5) >= vandaag
+        # ── PROGRAMMA ──────────────────────────────────────────────────────────
         volgende_week = next(
             (w for w in WEEKS if dt.date.fromisocalendar(w["year"], w["week"], 5) >= today),
             None
         )
         te_scrapen = [volgende_week] if volgende_week else []
+        print(f"\nProgramma laden ({volgende_week['label'] if volgende_week else 'geen'})...")
 
-        print(f"\nProgramma laden (alleen eerstvolgende week: {volgende_week['label'] if volgende_week else 'geen'})...")
         seen_p = set()
         for w in te_scrapen:
             url = f"{BASE_URL}?year={w['year']}&week={w['week']}"
             print(f"  {w['label']}: {url}")
             page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            # Wacht specifiek op een planned wedstrijd — dit bevestigt dat de AJAX klaar is
             try:
                 page.wait_for_selector("div.game[data-state='planned']", timeout=15000)
             except Exception:
-                # Geen planned wedstrijden op deze week, probeer gewoon div.game
                 try:
                     page.wait_for_selector("div.game", timeout=5000)
                 except Exception:
@@ -167,10 +195,15 @@ def main():
                 if key in seen_p: continue
                 seen_p.add(key)
                 programma.append({
-                    "datum": str(game_date) if game_date else None,
-                    "datum_str": date_str, "tijdstip": time_str,
-                    "thuis": h, "uit": a,
-                    "locatie": r.get("location"), "divisie": r.get("division"),
+                    "datum":     str(game_date) if game_date else None,
+                    "datum_str": date_str,
+                    "tijdstip":  time_str,
+                    "thuis":     h,
+                    "thuis_afk": afkorting(h),
+                    "uit":       a,
+                    "uit_afk":   afkorting(a),
+                    "locatie":   r.get("location"),
+                    "divisie":   r.get("division"),
                 })
 
         browser.close()
