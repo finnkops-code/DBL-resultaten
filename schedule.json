@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-05-29T21:31:09Z",
+  "bijgewerkt": "2026-05-29T23:02:06Z",
   "uitslagen": [
     {
       "datum": "2026-05-29",
@@ -48,23 +48,23 @@
       "datum": "2026-05-30",
       "datum_str": "Samstag, 30. Mai 2026",
       "tijdstip": "14:00",
-      "thuis": "Cologne Cardinals",
-      "thuis_afk": "CGN",
-      "uit": "Bonn Capitals",
-      "uit_afk": "BON",
-      "locatie": "Köln",
-      "divisie": "Nord"
-    },
-    {
-      "datum": "2026-05-30",
-      "datum_str": "Samstag, 30. Mai 2026",
-      "tijdstip": "14:00",
       "thuis": "Heidenheim Heideköpfe",
       "thuis_afk": "HDH",
       "uit": "München-Haar Disciples",
       "uit_afk": "MUC",
       "locatie": "Heidenheim an der Brenz",
       "divisie": "Süd"
+    },
+    {
+      "datum": "2026-05-30",
+      "datum_str": "Samstag, 30. Mai 2026",
+      "tijdstip": "15:30",
+      "thuis": "Cologne Cardinals",
+      "thuis_afk": "CGN",
+      "uit": "Bonn Capitals",
+      "uit_afk": "BON",
+      "locatie": "Köln",
+      "divisie": "Nord"
     },
     {
       "datum": "2026-05-30",
