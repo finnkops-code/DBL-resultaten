@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-05-30T18:08:52Z",
+  "bijgewerkt": "2026-05-30T19:17:03Z",
   "uitslagen": [
     {
       "datum": "2026-05-29",
@@ -114,8 +114,8 @@
       "thuis_afk": "PAD",
       "uit": "Dortmund Wanderers",
       "uit_afk": "DOR",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 14,
+      "score_uit": 2,
       "locatie": "Paderborn",
       "divisie": "Nord",
       "gespeeld": true,
