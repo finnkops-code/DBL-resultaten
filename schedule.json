@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-05-30T12:00:54Z",
+  "bijgewerkt": "2026-05-30T14:23:12Z",
   "uitslagen": [
     {
       "datum": "2026-05-29",
@@ -39,8 +39,8 @@
       "thuis_afk": "BON",
       "uit": "Cologne Cardinals",
       "uit_afk": "CGN",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 4,
+      "score_uit": 3,
       "locatie": "Köln",
       "divisie": "Nord",
       "gespeeld": true,
@@ -75,9 +75,7 @@
       "divisie": "Süd",
       "gespeeld": true,
       "live": false
-    }
-  ],
-  "programma": [
+    },
     {
       "datum": "2026-05-30",
       "datum_str": "Samstag, 30. Mai 2026",
@@ -86,8 +84,12 @@
       "thuis_afk": "CGN",
       "uit": "Bonn Capitals",
       "uit_afk": "BON",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Köln",
-      "divisie": "Nord"
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
     },
     {
       "datum": "2026-05-30",
@@ -97,9 +99,15 @@
       "thuis_afk": "GAU",
       "uit": "Stuttgart Reds",
       "uit_afk": "STR",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Gauting",
-      "divisie": "Süd"
-    },
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-05-30",
       "datum_str": "Samstag, 30. Mai 2026",
