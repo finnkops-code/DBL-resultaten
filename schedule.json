@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-05-30T14:23:12Z",
+  "bijgewerkt": "2026-05-30T15:57:52Z",
   "uitslagen": [
     {
       "datum": "2026-05-29",
@@ -54,8 +54,8 @@
       "thuis_afk": "MNZ",
       "uit": "Guggenberger Legionäre",
       "uit_afk": "REG",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 1,
+      "score_uit": 10,
       "locatie": "Mainz",
       "divisie": "Süd",
       "gespeeld": true,
@@ -69,8 +69,8 @@
       "thuis_afk": "HDH",
       "uit": "München-Haar Disciples",
       "uit_afk": "MUC",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 9,
+      "score_uit": 8,
       "locatie": "Heidenheim an der Brenz",
       "divisie": "Süd",
       "gespeeld": true,
@@ -84,7 +84,7 @@
       "thuis_afk": "CGN",
       "uit": "Bonn Capitals",
       "uit_afk": "BON",
-      "score_thuis": 0,
+      "score_thuis": 8,
       "score_uit": 0,
       "locatie": "Köln",
       "divisie": "Nord",
