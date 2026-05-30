@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-05-30T05:40:07Z",
+  "bijgewerkt": "2026-05-30T08:14:21Z",
   "uitslagen": [
     {
       "datum": "2026-05-29",
@@ -33,6 +33,17 @@
     }
   ],
   "programma": [
+    {
+      "datum": "2026-05-30",
+      "datum_str": "Samstag, 30. Mai 2026",
+      "tijdstip": "13:00",
+      "thuis": "Bonn Capitals",
+      "thuis_afk": "BON",
+      "uit": "Cologne Cardinals",
+      "uit_afk": "CGN",
+      "locatie": "Köln",
+      "divisie": "Nord"
+    },
     {
       "datum": "2026-05-30",
       "datum_str": "Samstag, 30. Mai 2026",
