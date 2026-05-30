@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-05-30T16:57:28Z",
+  "bijgewerkt": "2026-05-30T17:59:54Z",
   "uitslagen": [
     {
       "datum": "2026-05-29",
@@ -99,8 +99,8 @@
       "thuis_afk": "GAU",
       "uit": "Stuttgart Reds",
       "uit_afk": "STR",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 5,
+      "score_uit": 2,
       "locatie": "Gauting",
       "divisie": "Süd",
       "gespeeld": true,
@@ -120,9 +120,7 @@
       "divisie": "Nord",
       "gespeeld": true,
       "live": false
-    }
-  ],
-  "programma": [
+    },
     {
       "datum": "2026-05-30",
       "datum_str": "Samstag, 30. Mai 2026",
@@ -131,9 +129,15 @@
       "thuis_afk": "HAM",
       "uit": "Hünstetten STORM",
       "uit_afk": "STM",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Hamburg",
-      "divisie": "Nord"
-    },
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-05-31",
       "datum_str": "Sonntag, 31. Mai 2026",
