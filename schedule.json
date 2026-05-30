@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-05-30T15:57:52Z",
+  "bijgewerkt": "2026-05-30T16:57:28Z",
   "uitslagen": [
     {
       "datum": "2026-05-29",
@@ -105,9 +105,7 @@
       "divisie": "Süd",
       "gespeeld": true,
       "live": false
-    }
-  ],
-  "programma": [
+    },
     {
       "datum": "2026-05-30",
       "datum_str": "Samstag, 30. Mai 2026",
@@ -116,9 +114,15 @@
       "thuis_afk": "PAD",
       "uit": "Dortmund Wanderers",
       "uit_afk": "DOR",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Paderborn",
-      "divisie": "Nord"
-    },
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-05-30",
       "datum_str": "Samstag, 30. Mai 2026",
