@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-05-31T11:25:52Z",
+  "bijgewerkt": "2026-05-31T13:08:57Z",
   "uitslagen": [
     {
       "datum": "2026-05-29",
@@ -145,7 +145,7 @@
       "uit": "Stuttgart Reds",
       "uit_afk": "STR",
       "score_thuis": 0,
-      "score_uit": 0,
+      "score_uit": 11,
       "locatie": "Gauting",
       "divisie": "Süd",
       "gespeeld": true,
@@ -165,9 +165,7 @@
       "divisie": "Nord",
       "gespeeld": true,
       "live": false
-    }
-  ],
-  "programma": [
+    },
     {
       "datum": "2026-05-31",
       "datum_str": "Sonntag, 31. Mai 2026",
@@ -176,7 +174,145 @@
       "thuis_afk": "DOR",
       "uit": "Untouchables Paderborn",
       "uit_afk": "PAD",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Dortmund",
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
+    {
+      "datum": "2026-06-05",
+      "datum_str": "Freitag, 05. Juni 2026",
+      "tijdstip": "18:00",
+      "thuis": "Bonn Capitals",
+      "thuis_afk": "BON",
+      "uit": "Untouchables Paderborn",
+      "uit_afk": "PAD",
+      "locatie": "Bonn",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-05",
+      "datum_str": "Freitag, 05. Juni 2026",
+      "tijdstip": "19:00",
+      "thuis": "Mainz Athletics",
+      "thuis_afk": "MNZ",
+      "uit": "Gauting Indians",
+      "uit_afk": "GAU",
+      "locatie": "Mainz",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-05",
+      "datum_str": "Freitag, 05. Juni 2026",
+      "tijdstip": "19:00",
+      "thuis": "Heidenheim Heideköpfe",
+      "thuis_afk": "HDH",
+      "uit": "Guggenberger Legionäre",
+      "uit_afk": "REG",
+      "locatie": "Heidenheim an der Brenz",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-06",
+      "datum_str": "Samstag, 06. Juni 2026",
+      "tijdstip": "13:00",
+      "thuis": "Mainz Athletics",
+      "thuis_afk": "MNZ",
+      "uit": "Gauting Indians",
+      "uit_afk": "GAU",
+      "locatie": "Mainz",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-06",
+      "datum_str": "Samstag, 06. Juni 2026",
+      "tijdstip": "13:00",
+      "thuis": "Heidenheim Heideköpfe",
+      "thuis_afk": "HDH",
+      "uit": "Guggenberger Legionäre",
+      "uit_afk": "REG",
+      "locatie": "Heidenheim an der Brenz",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-06",
+      "datum_str": "Samstag, 06. Juni 2026",
+      "tijdstip": "14:00",
+      "thuis": "Hünstetten STORM",
+      "thuis_afk": "STM",
+      "uit": "Dortmund Wanderers",
+      "uit_afk": "DOR",
+      "locatie": "Hünstetten",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-06",
+      "datum_str": "Samstag, 06. Juni 2026",
+      "tijdstip": "18:00",
+      "thuis": "München-Haar Disciples",
+      "thuis_afk": "MUC",
+      "uit": "Stuttgart Reds",
+      "uit_afk": "STR",
+      "locatie": "Haar",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-06",
+      "datum_str": "Samstag, 06. Juni 2026",
+      "tijdstip": "19:00",
+      "thuis": "Untouchables Paderborn",
+      "thuis_afk": "PAD",
+      "uit": "Bonn Capitals",
+      "uit_afk": "BON",
+      "locatie": "Paderborn",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-06",
+      "datum_str": "Samstag, 06. Juni 2026",
+      "tijdstip": "19:00",
+      "thuis": "Hamburg Stealers",
+      "thuis_afk": "HAM",
+      "uit": "Cologne Cardinals",
+      "uit_afk": "CGN",
+      "locatie": "Hamburg",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-07",
+      "datum_str": "Sonntag, 07. Juni 2026",
+      "tijdstip": "12:00",
+      "thuis": "München-Haar Disciples",
+      "thuis_afk": "MUC",
+      "uit": "Stuttgart Reds",
+      "uit_afk": "STR",
+      "locatie": "Haar",
+      "divisie": "Süd"
+    },
+    {
+      "datum": "2026-06-07",
+      "datum_str": "Sonntag, 07. Juni 2026",
+      "tijdstip": "13:00",
+      "thuis": "Hamburg Stealers",
+      "thuis_afk": "HAM",
+      "uit": "Cologne Cardinals",
+      "uit_afk": "CGN",
+      "locatie": "Hamburg",
+      "divisie": "Nord"
+    },
+    {
+      "datum": "2026-06-07",
+      "datum_str": "Sonntag, 07. Juni 2026",
+      "tijdstip": "14:00",
+      "thuis": "Hünstetten STORM",
+      "thuis_afk": "STM",
+      "uit": "Dortmund Wanderers",
+      "uit_afk": "DOR",
+      "locatie": "Hünstetten",
       "divisie": "Nord"
     }
   ]
