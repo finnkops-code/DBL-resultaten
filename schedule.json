@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-05-31T13:08:57Z",
+  "bijgewerkt": "2026-05-31T15:09:42Z",
   "uitslagen": [
     {
       "datum": "2026-05-29",
@@ -159,8 +159,8 @@
       "thuis_afk": "HAM",
       "uit": "Hünstetten STORM",
       "uit_afk": "STM",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 10,
+      "score_uit": 5,
       "locatie": "Hamburg",
       "divisie": "Nord",
       "gespeeld": true,
