@@ -1,7 +1,6 @@
 {
-  "bijgewerkt": "2026-06-05T15:47:39Z",
-  "uitslagen": [],
-  "programma": [
+  "bijgewerkt": "2026-06-05T17:45:50Z",
+  "uitslagen": [
     {
       "datum": "2026-06-05",
       "datum_str": "Freitag, 05. Juni 2026",
@@ -10,8 +9,12 @@
       "thuis_afk": "BON",
       "uit": "Untouchables Paderborn",
       "uit_afk": "PAD",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Bonn",
-      "divisie": "Nord"
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
     },
     {
       "datum": "2026-06-05",
@@ -21,8 +24,12 @@
       "thuis_afk": "MNZ",
       "uit": "Gauting Indians",
       "uit_afk": "GAU",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Mainz",
-      "divisie": "Süd"
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
     },
     {
       "datum": "2026-06-05",
@@ -32,9 +39,15 @@
       "thuis_afk": "HDH",
       "uit": "Guggenberger Legionäre",
       "uit_afk": "REG",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Heidenheim an der Brenz",
-      "divisie": "Süd"
-    },
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-06-06",
       "datum_str": "Samstag, 06. Juni 2026",
