@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-06T11:15:24Z",
+  "bijgewerkt": "2026-06-06T13:04:09Z",
   "uitslagen": [
     {
       "datum": "2026-06-05",
@@ -75,9 +75,7 @@
       "divisie": "Süd",
       "gespeeld": true,
       "live": false
-    }
-  ],
-  "programma": [
+    },
     {
       "datum": "2026-06-06",
       "datum_str": "Samstag, 06. Juni 2026",
@@ -86,9 +84,15 @@
       "thuis_afk": "STM",
       "uit": "Dortmund Wanderers",
       "uit_afk": "DOR",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Hünstetten",
-      "divisie": "Nord"
-    },
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-06-06",
       "datum_str": "Samstag, 06. Juni 2026",
