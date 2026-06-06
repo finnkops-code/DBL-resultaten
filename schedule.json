@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-06T16:57:04Z",
+  "bijgewerkt": "2026-06-06T18:01:47Z",
   "uitslagen": [
     {
       "datum": "2026-06-05",
@@ -105,9 +105,7 @@
       "divisie": "Süd",
       "gespeeld": true,
       "live": false
-    }
-  ],
-  "programma": [
+    },
     {
       "datum": "2026-06-06",
       "datum_str": "Samstag, 06. Juni 2026",
@@ -116,8 +114,12 @@
       "thuis_afk": "PAD",
       "uit": "Bonn Capitals",
       "uit_afk": "BON",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Paderborn",
-      "divisie": "Nord"
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
     },
     {
       "datum": "2026-06-06",
@@ -127,9 +129,15 @@
       "thuis_afk": "HAM",
       "uit": "Cologne Cardinals",
       "uit_afk": "CGN",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Hamburg",
-      "divisie": "Nord"
-    },
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-06-07",
       "datum_str": "Sonntag, 07. Juni 2026",
