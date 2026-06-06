@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-06T09:16:31Z",
+  "bijgewerkt": "2026-06-06T11:15:24Z",
   "uitslagen": [
     {
       "datum": "2026-06-05",
@@ -45,9 +45,7 @@
       "divisie": "Süd",
       "gespeeld": true,
       "live": false
-    }
-  ],
-  "programma": [
+    },
     {
       "datum": "2026-06-06",
       "datum_str": "Samstag, 06. Juni 2026",
@@ -56,8 +54,12 @@
       "thuis_afk": "MNZ",
       "uit": "Gauting Indians",
       "uit_afk": "GAU",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Mainz",
-      "divisie": "Süd"
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
     },
     {
       "datum": "2026-06-06",
@@ -67,9 +69,15 @@
       "thuis_afk": "HDH",
       "uit": "Guggenberger Legionäre",
       "uit_afk": "REG",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Heidenheim an der Brenz",
-      "divisie": "Süd"
-    },
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-06-06",
       "datum_str": "Samstag, 06. Juni 2026",
