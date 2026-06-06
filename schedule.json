@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-06T15:04:39Z",
+  "bijgewerkt": "2026-06-06T16:57:04Z",
   "uitslagen": [
     {
       "datum": "2026-06-05",
@@ -90,9 +90,7 @@
       "divisie": "Nord",
       "gespeeld": true,
       "live": false
-    }
-  ],
-  "programma": [
+    },
     {
       "datum": "2026-06-06",
       "datum_str": "Samstag, 06. Juni 2026",
@@ -101,9 +99,15 @@
       "thuis_afk": "MUC",
       "uit": "Stuttgart Reds",
       "uit_afk": "STR",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Haar",
-      "divisie": "Süd"
-    },
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-06-06",
       "datum_str": "Samstag, 06. Juni 2026",
