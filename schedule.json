@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-07T09:56:40Z",
+  "bijgewerkt": "2026-06-07T11:43:19Z",
   "uitslagen": [
     {
       "datum": "2026-06-05",
@@ -135,9 +135,7 @@
       "divisie": "Nord",
       "gespeeld": true,
       "live": false
-    }
-  ],
-  "programma": [
+    },
     {
       "datum": "2026-06-07",
       "datum_str": "Sonntag, 07. Juni 2026",
@@ -146,8 +144,12 @@
       "thuis_afk": "MUC",
       "uit": "Stuttgart Reds",
       "uit_afk": "STR",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Haar",
-      "divisie": "Süd"
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
     },
     {
       "datum": "2026-06-07",
@@ -157,9 +159,15 @@
       "thuis_afk": "HAM",
       "uit": "Cologne Cardinals",
       "uit_afk": "CGN",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Hamburg",
-      "divisie": "Nord"
-    },
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-06-07",
       "datum_str": "Sonntag, 07. Juni 2026",
