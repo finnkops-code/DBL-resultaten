@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-07T13:16:40Z",
+  "bijgewerkt": "2026-06-07T15:17:22Z",
   "uitslagen": [
     {
       "datum": "2026-06-05",
@@ -159,8 +159,8 @@
       "thuis_afk": "HAM",
       "uit": "Cologne Cardinals",
       "uit_afk": "CGN",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 14,
+      "score_uit": 4,
       "locatie": "Hamburg",
       "divisie": "Nord",
       "gespeeld": true,
@@ -174,7 +174,7 @@
       "thuis_afk": "STM",
       "uit": "Dortmund Wanderers",
       "uit_afk": "DOR",
-      "score_thuis": 0,
+      "score_thuis": 15,
       "score_uit": 0,
       "locatie": "Hünstetten",
       "divisie": "Nord",
