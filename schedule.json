@@ -1,7 +1,6 @@
 {
-  "bijgewerkt": "2026-06-12T12:48:12Z",
-  "uitslagen": [],
-  "programma": [
+  "bijgewerkt": "2026-06-12T16:11:10Z",
+  "uitslagen": [
     {
       "datum": "2026-06-12",
       "datum_str": "Freitag, 12. Juni 2026",
@@ -10,9 +9,15 @@
       "thuis_afk": "MUC",
       "uit": "Guggenberger Legionäre",
       "uit_afk": "REG",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Haar",
-      "divisie": "Süd"
-    },
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-06-12",
       "datum_str": "Freitag, 12. Juni 2026",
