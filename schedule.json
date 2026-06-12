@@ -1,34 +1,7 @@
 {
-  "bijgewerkt": "2026-06-12T16:11:10Z",
-  "uitslagen": [
-    {
-      "datum": "2026-06-12",
-      "datum_str": "Freitag, 12. Juni 2026",
-      "tijdstip": "18:00",
-      "thuis": "München-Haar Disciples",
-      "thuis_afk": "MUC",
-      "uit": "Guggenberger Legionäre",
-      "uit_afk": "REG",
-      "score_thuis": 0,
-      "score_uit": 0,
-      "locatie": "Haar",
-      "divisie": "Süd",
-      "gespeeld": true,
-      "live": false
-    }
-  ],
+  "bijgewerkt": "2026-06-12T18:57:15Z",
+  "uitslagen": [],
   "programma": [
-    {
-      "datum": "2026-06-12",
-      "datum_str": "Freitag, 12. Juni 2026",
-      "tijdstip": "19:00",
-      "thuis": "Stuttgart Reds",
-      "thuis_afk": "STR",
-      "uit": "Mainz Athletics",
-      "uit_afk": "MNZ",
-      "locatie": "Stuttgart",
-      "divisie": "Süd"
-    },
     {
       "datum": "2026-06-13",
       "datum_str": "Samstag, 13. Juni 2026",
