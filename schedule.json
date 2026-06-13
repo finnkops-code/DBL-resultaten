@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-13T11:45:40Z",
+  "bijgewerkt": "2026-06-13T13:21:24Z",
   "uitslagen": [
     {
       "datum": "2026-06-12",
@@ -45,9 +45,7 @@
       "divisie": "Süd",
       "gespeeld": true,
       "live": false
-    }
-  ],
-  "programma": [
+    },
     {
       "datum": "2026-06-13",
       "datum_str": "Samstag, 13. Juni 2026",
@@ -56,8 +54,12 @@
       "thuis_afk": "STM",
       "uit": "Cologne Cardinals",
       "uit_afk": "CGN",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Hünstetten",
-      "divisie": "Nord"
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
     },
     {
       "datum": "2026-06-13",
@@ -67,9 +69,15 @@
       "thuis_afk": "REG",
       "uit": "München-Haar Disciples",
       "uit_afk": "MUC",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Regensburg",
-      "divisie": "Süd"
-    },
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-06-13",
       "datum_str": "Samstag, 13. Juni 2026",
