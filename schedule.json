@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-13T17:08:10Z",
+  "bijgewerkt": "2026-06-13T18:17:46Z",
   "uitslagen": [
     {
       "datum": "2026-06-12",
@@ -99,8 +99,8 @@
       "thuis_afk": "DOR",
       "uit": "Bonn Capitals",
       "uit_afk": "BON",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 3,
+      "score_uit": 13,
       "locatie": "Dortmund",
       "divisie": "Nord",
       "gespeeld": true,
