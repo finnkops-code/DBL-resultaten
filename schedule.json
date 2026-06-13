@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-13T09:49:34Z",
+  "bijgewerkt": "2026-06-13T11:45:40Z",
   "uitslagen": [
     {
       "datum": "2026-06-12",
@@ -30,9 +30,7 @@
       "divisie": "Süd",
       "gespeeld": true,
       "live": false
-    }
-  ],
-  "programma": [
+    },
     {
       "datum": "2026-06-13",
       "datum_str": "Samstag, 13. Juni 2026",
@@ -41,9 +39,15 @@
       "thuis_afk": "STR",
       "uit": "Mainz Athletics",
       "uit_afk": "MNZ",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Stuttgart",
-      "divisie": "Süd"
-    },
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-06-13",
       "datum_str": "Samstag, 13. Juni 2026",
