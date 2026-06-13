@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-13T13:21:24Z",
+  "bijgewerkt": "2026-06-13T15:24:30Z",
   "uitslagen": [
     {
       "datum": "2026-06-12",
@@ -39,8 +39,8 @@
       "thuis_afk": "STR",
       "uit": "Mainz Athletics",
       "uit_afk": "MNZ",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 4,
+      "score_uit": 6,
       "locatie": "Stuttgart",
       "divisie": "Süd",
       "gespeeld": true,
@@ -55,7 +55,7 @@
       "uit": "Cologne Cardinals",
       "uit_afk": "CGN",
       "score_thuis": 0,
-      "score_uit": 0,
+      "score_uit": 11,
       "locatie": "Hünstetten",
       "divisie": "Nord",
       "gespeeld": true,
@@ -75,9 +75,7 @@
       "divisie": "Süd",
       "gespeeld": true,
       "live": false
-    }
-  ],
-  "programma": [
+    },
     {
       "datum": "2026-06-13",
       "datum_str": "Samstag, 13. Juni 2026",
@@ -86,8 +84,12 @@
       "thuis_afk": "GAU",
       "uit": "Heidenheim Heideköpfe",
       "uit_afk": "HDH",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Gauting",
-      "divisie": "Süd"
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
     },
     {
       "datum": "2026-06-13",
@@ -97,9 +99,15 @@
       "thuis_afk": "DOR",
       "uit": "Bonn Capitals",
       "uit_afk": "BON",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Dortmund",
-      "divisie": "Nord"
-    },
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-06-13",
       "datum_str": "Samstag, 13. Juni 2026",
