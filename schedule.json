@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-13T15:24:30Z",
+  "bijgewerkt": "2026-06-13T17:08:10Z",
   "uitslagen": [
     {
       "datum": "2026-06-12",
@@ -69,8 +69,8 @@
       "thuis_afk": "REG",
       "uit": "München-Haar Disciples",
       "uit_afk": "MUC",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 15,
+      "score_uit": 6,
       "locatie": "Regensburg",
       "divisie": "Süd",
       "gespeeld": true,
@@ -84,8 +84,8 @@
       "thuis_afk": "GAU",
       "uit": "Heidenheim Heideköpfe",
       "uit_afk": "HDH",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 4,
+      "score_uit": 9,
       "locatie": "Gauting",
       "divisie": "Süd",
       "gespeeld": true,
@@ -105,9 +105,7 @@
       "divisie": "Nord",
       "gespeeld": true,
       "live": false
-    }
-  ],
-  "programma": [
+    },
     {
       "datum": "2026-06-13",
       "datum_str": "Samstag, 13. Juni 2026",
@@ -116,9 +114,15 @@
       "thuis_afk": "PAD",
       "uit": "Hamburg Stealers",
       "uit_afk": "HAM",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Paderborn",
-      "divisie": "Nord"
-    },
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-06-14",
       "datum_str": "Sonntag, 14. Juni 2026",
