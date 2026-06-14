@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-14T10:43:24Z",
+  "bijgewerkt": "2026-06-14T12:56:47Z",
   "uitslagen": [
     {
       "datum": "2026-06-12",
@@ -124,41 +124,17 @@
     {
       "datum": "2026-06-14",
       "datum_str": "Sonntag, 14. Juni 2026",
-      "tijdstip": "12:00",
-      "thuis": "Gauting Indians",
-      "thuis_afk": "GAU",
-      "uit": "Heidenheim Heideköpfe",
-      "uit_afk": "HDH",
-      "score_thuis": 0,
-      "score_uit": 0,
-      "locatie": "Gauting",
-      "divisie": "Süd",
-      "gespeeld": true,
-      "live": false
-    }
-  ],
-  "programma": [
-    {
-      "datum": "2026-06-14",
-      "datum_str": "Sonntag, 14. Juni 2026",
-      "tijdstip": "13:00",
-      "thuis": "Untouchables Paderborn",
-      "thuis_afk": "PAD",
-      "uit": "Hamburg Stealers",
-      "uit_afk": "HAM",
-      "locatie": "Paderborn",
-      "divisie": "Nord"
-    },
-    {
-      "datum": "2026-06-14",
-      "datum_str": "Sonntag, 14. Juni 2026",
       "tijdstip": "13:00",
       "thuis": "Cologne Cardinals",
       "thuis_afk": "CGN",
       "uit": "Hünstetten STORM",
       "uit_afk": "STM",
+      "score_thuis": 7,
+      "score_uit": 1,
       "locatie": "Köln",
-      "divisie": "Nord"
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
     },
     {
       "datum": "2026-06-14",
@@ -168,7 +144,24 @@
       "thuis_afk": "BON",
       "uit": "Dortmund Wanderers",
       "uit_afk": "DOR",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Bonn",
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
+    {
+      "datum": "2026-06-14",
+      "datum_str": "Sonntag, 14. Juni 2026",
+      "tijdstip": "15:15",
+      "thuis": "Cologne Cardinals",
+      "thuis_afk": "CGN",
+      "uit": "Hünstetten STORM",
+      "uit_afk": "STM",
+      "locatie": "Köln",
       "divisie": "Nord"
     }
   ]
