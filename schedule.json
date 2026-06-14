@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-14T07:14:37Z",
+  "bijgewerkt": "2026-06-14T10:43:24Z",
   "uitslagen": [
     {
       "datum": "2026-06-12",
@@ -120,9 +120,7 @@
       "divisie": "Nord",
       "gespeeld": true,
       "live": false
-    }
-  ],
-  "programma": [
+    },
     {
       "datum": "2026-06-14",
       "datum_str": "Sonntag, 14. Juni 2026",
@@ -131,9 +129,15 @@
       "thuis_afk": "GAU",
       "uit": "Heidenheim Heideköpfe",
       "uit_afk": "HDH",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Gauting",
-      "divisie": "Süd"
-    },
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
+  "programma": [
     {
       "datum": "2026-06-14",
       "datum_str": "Sonntag, 14. Juni 2026",
