@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-20T09:57:03Z",
+  "bijgewerkt": "2026-06-20T11:52:25Z",
   "uitslagen": [
     {
       "datum": "2026-06-19",
@@ -27,6 +27,21 @@
       "score_thuis": 6,
       "score_uit": 1,
       "locatie": "Regensburg",
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-06-20",
+      "datum_str": "Samstag, 20. Juni 2026",
+      "tijdstip": "13:00",
+      "thuis": "Mainz Athletics",
+      "thuis_afk": "MNZ",
+      "uit": "Heidenheim Heideköpfe",
+      "uit_afk": "HDH",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Mainz",
       "divisie": "Süd",
       "gespeeld": true,
       "live": false
