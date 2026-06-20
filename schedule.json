@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-20T15:28:06Z",
+  "bijgewerkt": "2026-06-20T17:14:12Z",
   "uitslagen": [
     {
       "datum": "2026-06-19",
@@ -84,8 +84,8 @@
       "thuis_afk": "BON",
       "uit": "Hamburg Stealers",
       "uit_afk": "HAM",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 8,
+      "score_uit": 4,
       "locatie": "Bonn",
       "divisie": "Nord",
       "gespeeld": true,
@@ -99,8 +99,8 @@
       "thuis_afk": "MUC",
       "uit": "Gauting Indians",
       "uit_afk": "GAU",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 2,
+      "score_uit": 3,
       "locatie": "Haar",
       "divisie": "Süd",
       "gespeeld": true,
@@ -115,7 +115,7 @@
       "uit": "Cologne Cardinals",
       "uit_afk": "CGN",
       "score_thuis": 0,
-      "score_uit": 0,
+      "score_uit": 11,
       "locatie": "Dortmund",
       "divisie": "Nord",
       "gespeeld": true,
