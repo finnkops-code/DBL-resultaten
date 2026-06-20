@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-20T11:52:25Z",
+  "bijgewerkt": "2026-06-20T13:23:31Z",
   "uitslagen": [
     {
       "datum": "2026-06-19",
@@ -43,6 +43,51 @@
       "score_uit": 0,
       "locatie": "Mainz",
       "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-06-20",
+      "datum_str": "Samstag, 20. Juni 2026",
+      "tijdstip": "14:00",
+      "thuis": "Hünstetten STORM",
+      "thuis_afk": "STM",
+      "uit": "Untouchables Paderborn",
+      "uit_afk": "PAD",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Hünstetten",
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-06-20",
+      "datum_str": "Samstag, 20. Juni 2026",
+      "tijdstip": "14:00",
+      "thuis": "Guggenberger Legionäre",
+      "thuis_afk": "REG",
+      "uit": "Stuttgart Reds",
+      "uit_afk": "STR",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Regensburg",
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-06-20",
+      "datum_str": "Samstag, 20. Juni 2026",
+      "tijdstip": "15:00",
+      "thuis": "Bonn Capitals",
+      "thuis_afk": "BON",
+      "uit": "Hamburg Stealers",
+      "uit_afk": "HAM",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Bonn",
+      "divisie": "Nord",
       "gespeeld": true,
       "live": false
     }
