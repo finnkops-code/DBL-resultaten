@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-27T15:58:14Z",
+  "bijgewerkt": "2026-06-27T17:05:20Z",
   "uitslagen": [
     {
       "datum": "2026-06-27",
@@ -28,6 +28,51 @@
       "score_uit": 0,
       "locatie": "Haar",
       "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-06-27",
+      "datum_str": "Samstag, 27. Juni 2026",
+      "tijdstip": "18:00",
+      "thuis": "Untouchables Paderborn",
+      "thuis_afk": "PAD",
+      "uit": "Mainz Athletics",
+      "uit_afk": "MNZ",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Paderborn",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-06-27",
+      "datum_str": "Samstag, 27. Juni 2026",
+      "tijdstip": "19:00",
+      "thuis": "Bonn Capitals",
+      "thuis_afk": "BON",
+      "uit": "Guggenberger Legionäre",
+      "uit_afk": "REG",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Bonn",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-06-27",
+      "datum_str": "Samstag, 27. Juni 2026",
+      "tijdstip": "19:00",
+      "thuis": "Hamburg Stealers",
+      "thuis_afk": "HAM",
+      "uit": "Heidenheim Heideköpfe",
+      "uit_afk": "HDH",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Hamburg",
+      "divisie": null,
       "gespeeld": true,
       "live": false
     }
