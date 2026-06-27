@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-27T19:01:13Z",
+  "bijgewerkt": "2026-06-27T20:47:26Z",
   "uitslagen": [
     {
       "datum": "2026-06-27",
@@ -69,8 +69,8 @@
       "thuis_afk": "HAM",
       "uit": "Heidenheim Heideköpfe",
       "uit_afk": "HDH",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 11,
+      "score_uit": 3,
       "locatie": "Hamburg",
       "divisie": null,
       "gespeeld": true,
