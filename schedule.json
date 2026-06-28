@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-06-28T17:58:53Z",
+  "bijgewerkt": "2026-06-28T19:16:23Z",
   "uitslagen": [
     {
       "datum": "2026-06-27",
@@ -144,8 +144,8 @@
       "thuis_afk": "MUC",
       "uit": "Gauting Indians",
       "uit_afk": "GAU",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 10,
+      "score_uit": 12,
       "locatie": "Haar",
       "divisie": "Süd",
       "gespeeld": true,
