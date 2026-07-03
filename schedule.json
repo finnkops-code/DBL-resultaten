@@ -1,5 +1,66 @@
 {
-  "bijgewerkt": "2026-07-03T16:26:13Z",
-  "uitslagen": [],
+  "bijgewerkt": "2026-07-03T18:07:13Z",
+  "uitslagen": [
+    {
+      "datum": "2026-07-03",
+      "datum_str": "Freitag, 03. Juli 2026",
+      "tijdstip": "19:00",
+      "thuis": "Mainz Athletics",
+      "thuis_afk": "MNZ",
+      "uit": "Bonn Capitals",
+      "uit_afk": "BON",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Mainz",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-03",
+      "datum_str": "Freitag, 03. Juli 2026",
+      "tijdstip": "19:00",
+      "thuis": "Heidenheim Heideköpfe",
+      "thuis_afk": "HDH",
+      "uit": "Untouchables Paderborn",
+      "uit_afk": "PAD",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Heidenheim an der Brenz",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-03",
+      "datum_str": "Freitag, 03. Juli 2026",
+      "tijdstip": "19:00",
+      "thuis": "Guggenberger Legionäre",
+      "thuis_afk": "REG",
+      "uit": "Hamburg Stealers",
+      "uit_afk": "HAM",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Regensburg",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-03",
+      "datum_str": "Freitag, 03. Juli 2026",
+      "tijdstip": "19:00",
+      "thuis": "Stuttgart Reds",
+      "thuis_afk": "STR",
+      "uit": "München-Haar Disciples",
+      "uit_afk": "MUC",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Stuttgart",
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
   "programma": []
 }
