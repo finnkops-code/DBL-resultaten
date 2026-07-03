@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-03T20:08:16Z",
+  "bijgewerkt": "2026-07-03T21:55:07Z",
   "uitslagen": [
     {
       "datum": "2026-07-03",
@@ -9,8 +9,8 @@
       "thuis_afk": "MNZ",
       "uit": "Bonn Capitals",
       "uit_afk": "BON",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 5,
+      "score_uit": 7,
       "locatie": "Mainz",
       "divisie": null,
       "gespeeld": true,
@@ -24,8 +24,8 @@
       "thuis_afk": "HDH",
       "uit": "Untouchables Paderborn",
       "uit_afk": "PAD",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 14,
+      "score_uit": 9,
       "locatie": "Heidenheim an der Brenz",
       "divisie": null,
       "gespeeld": true,
