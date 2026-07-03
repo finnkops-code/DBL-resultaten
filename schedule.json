@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-03T18:07:13Z",
+  "bijgewerkt": "2026-07-03T20:08:16Z",
   "uitslagen": [
     {
       "datum": "2026-07-03",
@@ -39,8 +39,8 @@
       "thuis_afk": "REG",
       "uit": "Hamburg Stealers",
       "uit_afk": "HAM",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 11,
+      "score_uit": 1,
       "locatie": "Regensburg",
       "divisie": null,
       "gespeeld": true,
@@ -54,8 +54,8 @@
       "thuis_afk": "STR",
       "uit": "München-Haar Disciples",
       "uit_afk": "MUC",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 12,
+      "score_uit": 2,
       "locatie": "Stuttgart",
       "divisie": "Süd",
       "gespeeld": true,
