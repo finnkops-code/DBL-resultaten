@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-04T14:57:04Z",
+  "bijgewerkt": "2026-07-04T15:56:19Z",
   "uitslagen": [
     {
       "datum": "2026-07-03",
@@ -99,10 +99,25 @@
       "thuis_afk": "HDH",
       "uit": "Untouchables Paderborn",
       "uit_afk": "PAD",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 6,
+      "score_uit": 13,
       "locatie": "Heidenheim an der Brenz",
       "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-04",
+      "datum_str": "Samstag, 04. Juli 2026",
+      "tijdstip": "17:00",
+      "thuis": "Dortmund Wanderers",
+      "thuis_afk": "DOR",
+      "uit": "Cologne Cardinals",
+      "uit_afk": "CGN",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Dortmund",
+      "divisie": "Nord",
       "gespeeld": true,
       "live": false
     }
