@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-04T12:00:21Z",
+  "bijgewerkt": "2026-07-04T13:36:37Z",
   "uitslagen": [
     {
       "datum": "2026-07-03",
@@ -84,10 +84,25 @@
       "thuis_afk": "STR",
       "uit": "München-Haar Disciples",
       "uit_afk": "MUC",
-      "score_thuis": 0,
+      "score_thuis": 4,
       "score_uit": 0,
       "locatie": "Stuttgart",
       "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-04",
+      "datum_str": "Samstag, 04. Juli 2026",
+      "tijdstip": "14:00",
+      "thuis": "Heidenheim Heideköpfe",
+      "thuis_afk": "HDH",
+      "uit": "Untouchables Paderborn",
+      "uit_afk": "PAD",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Heidenheim an der Brenz",
+      "divisie": null,
       "gespeeld": true,
       "live": false
     }
