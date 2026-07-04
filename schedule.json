@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-04T13:36:37Z",
+  "bijgewerkt": "2026-07-04T14:57:04Z",
   "uitslagen": [
     {
       "datum": "2026-07-03",
@@ -69,8 +69,8 @@
       "thuis_afk": "MNZ",
       "uit": "Bonn Capitals",
       "uit_afk": "BON",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 4,
+      "score_uit": 7,
       "locatie": "Mainz",
       "divisie": null,
       "gespeeld": true,
