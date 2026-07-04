@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-04T10:48:01Z",
+  "bijgewerkt": "2026-07-04T12:00:21Z",
   "uitslagen": [
     {
       "datum": "2026-07-03",
@@ -56,6 +56,36 @@
       "uit_afk": "MUC",
       "score_thuis": 12,
       "score_uit": 2,
+      "locatie": "Stuttgart",
+      "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-04",
+      "datum_str": "Samstag, 04. Juli 2026",
+      "tijdstip": "13:00",
+      "thuis": "Mainz Athletics",
+      "thuis_afk": "MNZ",
+      "uit": "Bonn Capitals",
+      "uit_afk": "BON",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Mainz",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-04",
+      "datum_str": "Samstag, 04. Juli 2026",
+      "tijdstip": "13:00",
+      "thuis": "Stuttgart Reds",
+      "thuis_afk": "STR",
+      "uit": "München-Haar Disciples",
+      "uit_afk": "MUC",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Stuttgart",
       "divisie": "Süd",
       "gespeeld": true,
