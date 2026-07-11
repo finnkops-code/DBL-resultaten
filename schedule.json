@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-11T15:42:49Z",
+  "bijgewerkt": "2026-07-11T16:40:49Z",
   "uitslagen": [
     {
       "datum": "2026-07-11",
@@ -28,6 +28,36 @@
       "score_uit": 0,
       "locatie": "Gauting",
       "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-11",
+      "datum_str": "Samstag, 11. Juli 2026",
+      "tijdstip": "18:00",
+      "thuis": "Bonn Capitals",
+      "thuis_afk": "BON",
+      "uit": "Heidenheim Heideköpfe",
+      "uit_afk": "HDH",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Bonn",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-11",
+      "datum_str": "Samstag, 11. Juli 2026",
+      "tijdstip": "18:00",
+      "thuis": "Untouchables Paderborn",
+      "thuis_afk": "PAD",
+      "uit": "Guggenberger Legionäre",
+      "uit_afk": "REG",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Paderborn",
+      "divisie": null,
       "gespeeld": true,
       "live": false
     }
