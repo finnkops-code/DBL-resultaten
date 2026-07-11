@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-11T16:40:49Z",
+  "bijgewerkt": "2026-07-11T17:44:33Z",
   "uitslagen": [
     {
       "datum": "2026-07-11",
@@ -9,8 +9,8 @@
       "thuis_afk": "STM",
       "uit": "Cologne Cardinals",
       "uit_afk": "CGN",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 7,
+      "score_uit": 9,
       "locatie": "Hünstetten",
       "divisie": "Nord",
       "gespeeld": true,
@@ -57,6 +57,21 @@
       "score_thuis": 0,
       "score_uit": 0,
       "locatie": "Paderborn",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-11",
+      "datum_str": "Samstag, 11. Juli 2026",
+      "tijdstip": "19:00",
+      "thuis": "Hamburg Stealers",
+      "thuis_afk": "HAM",
+      "uit": "Mainz Athletics",
+      "uit_afk": "MNZ",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Hamburg",
       "divisie": null,
       "gespeeld": true,
       "live": false
