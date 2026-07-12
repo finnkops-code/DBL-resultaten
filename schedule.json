@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-12T11:02:56Z",
+  "bijgewerkt": "2026-07-12T12:51:29Z",
   "uitslagen": [
     {
       "datum": "2026-07-11",
@@ -103,6 +103,51 @@
       "score_uit": 0,
       "locatie": "Bonn",
       "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-12",
+      "datum_str": "Sonntag, 12. Juli 2026",
+      "tijdstip": "14:00",
+      "thuis": "Untouchables Paderborn",
+      "thuis_afk": "PAD",
+      "uit": "Guggenberger Legionäre",
+      "uit_afk": "REG",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Paderborn",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-12",
+      "datum_str": "Sonntag, 12. Juli 2026",
+      "tijdstip": "14:00",
+      "thuis": "Hünstetten STORM",
+      "thuis_afk": "STM",
+      "uit": "Cologne Cardinals",
+      "uit_afk": "CGN",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Hünstetten",
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-12",
+      "datum_str": "Sonntag, 12. Juli 2026",
+      "tijdstip": "14:00",
+      "thuis": "Gauting Indians",
+      "thuis_afk": "GAU",
+      "uit": "Stuttgart Reds",
+      "uit_afk": "STR",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Gauting",
+      "divisie": "Süd",
       "gespeeld": true,
       "live": false
     }
