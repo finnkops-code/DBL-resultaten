@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-12T09:42:21Z",
+  "bijgewerkt": "2026-07-12T11:02:56Z",
   "uitslagen": [
     {
       "datum": "2026-07-11",
@@ -72,6 +72,36 @@
       "score_thuis": 6,
       "score_uit": 3,
       "locatie": "Hamburg",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-12",
+      "datum_str": "Sonntag, 12. Juli 2026",
+      "tijdstip": "12:00",
+      "thuis": "Hamburg Stealers",
+      "thuis_afk": "HAM",
+      "uit": "Mainz Athletics",
+      "uit_afk": "MNZ",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Hamburg",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-12",
+      "datum_str": "Sonntag, 12. Juli 2026",
+      "tijdstip": "13:00",
+      "thuis": "Bonn Capitals",
+      "thuis_afk": "BON",
+      "uit": "Heidenheim Heideköpfe",
+      "uit_afk": "HDH",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Bonn",
       "divisie": null,
       "gespeeld": true,
       "live": false
