@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-18T16:42:16Z",
+  "bijgewerkt": "2026-07-18T17:45:28Z",
   "uitslagen": [
     {
       "datum": "2026-07-18",
@@ -24,10 +24,55 @@
       "thuis_afk": "GAU",
       "uit": "München-Haar Disciples",
       "uit_afk": "MUC",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 3,
+      "score_uit": 4,
       "locatie": "Gauting",
       "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-18",
+      "datum_str": "Samstag, 18. Juli 2026",
+      "tijdstip": "19:00",
+      "thuis": "Guggenberger Legionäre",
+      "thuis_afk": "REG",
+      "uit": "Bonn Capitals",
+      "uit_afk": "BON",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Regensburg",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-18",
+      "datum_str": "Samstag, 18. Juli 2026",
+      "tijdstip": "19:00",
+      "thuis": "Mainz Athletics",
+      "thuis_afk": "MNZ",
+      "uit": "Untouchables Paderborn",
+      "uit_afk": "PAD",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Mainz",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-18",
+      "datum_str": "Samstag, 18. Juli 2026",
+      "tijdstip": "19:00",
+      "thuis": "Heidenheim Heideköpfe",
+      "thuis_afk": "HDH",
+      "uit": "Hamburg Stealers",
+      "uit_afk": "HAM",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Heidenheim an der Brenz",
+      "divisie": null,
       "gespeeld": true,
       "live": false
     }
