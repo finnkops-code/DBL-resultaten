@@ -1,5 +1,21 @@
 {
-  "bijgewerkt": "2026-07-18T11:42:44Z",
-  "uitslagen": [],
+  "bijgewerkt": "2026-07-18T12:45:47Z",
+  "uitslagen": [
+    {
+      "datum": "2026-07-18",
+      "datum_str": "Samstag, 18. Juli 2026",
+      "tijdstip": "14:00",
+      "thuis": "Dortmund Wanderers",
+      "thuis_afk": "DOR",
+      "uit": "Hünstetten STORM",
+      "uit_afk": "STM",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Dortmund",
+      "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
   "programma": []
 }
