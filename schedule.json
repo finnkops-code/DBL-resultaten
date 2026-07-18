@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-18T18:43:19Z",
+  "bijgewerkt": "2026-07-18T19:57:38Z",
   "uitslagen": [
     {
       "datum": "2026-07-18",
@@ -69,8 +69,8 @@
       "thuis_afk": "HDH",
       "uit": "Hamburg Stealers",
       "uit_afk": "HAM",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 3,
+      "score_uit": 5,
       "locatie": "Heidenheim an der Brenz",
       "divisie": null,
       "gespeeld": true,
