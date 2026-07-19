@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-19T14:18:54Z",
+  "bijgewerkt": "2026-07-19T15:44:13Z",
   "uitslagen": [
     {
       "datum": "2026-07-18",
@@ -144,8 +144,8 @@
       "thuis_afk": "STM",
       "uit": "Dortmund Wanderers",
       "uit_afk": "DOR",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 10,
+      "score_uit": 3,
       "locatie": "Hünstetten",
       "divisie": "Nord",
       "gespeeld": true,
