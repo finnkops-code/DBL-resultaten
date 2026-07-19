@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-19T15:44:13Z",
+  "bijgewerkt": "2026-07-19T16:42:24Z",
   "uitslagen": [
     {
       "datum": "2026-07-18",
@@ -129,8 +129,8 @@
       "thuis_afk": "REG",
       "uit": "Bonn Capitals",
       "uit_afk": "BON",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 7,
+      "score_uit": 6,
       "locatie": "Regensburg",
       "divisie": null,
       "gespeeld": true,
