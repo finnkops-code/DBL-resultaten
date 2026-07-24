@@ -1,5 +1,21 @@
 {
-  "bijgewerkt": "2026-07-24T14:42:20Z",
-  "uitslagen": [],
+  "bijgewerkt": "2026-07-24T18:09:37Z",
+  "uitslagen": [
+    {
+      "datum": "2026-07-24",
+      "datum_str": "Freitag, 24. Juli 2026",
+      "tijdstip": "18:00",
+      "thuis": "Bonn Capitals",
+      "thuis_afk": "BON",
+      "uit": "Mainz Athletics",
+      "uit_afk": "MNZ",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Bonn",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    }
+  ],
   "programma": []
 }
