@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-25T20:03:54Z",
+  "bijgewerkt": "2026-07-25T21:42:31Z",
   "uitslagen": [
     {
       "datum": "2026-07-24",
@@ -84,8 +84,8 @@
       "thuis_afk": "HAM",
       "uit": "Guggenberger Legionäre",
       "uit_afk": "REG",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 5,
+      "score_uit": 7,
       "locatie": "Hamburg",
       "divisie": null,
       "gespeeld": true,
