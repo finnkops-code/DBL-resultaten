@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-25T16:43:19Z",
+  "bijgewerkt": "2026-07-25T17:47:45Z",
   "uitslagen": [
     {
       "datum": "2026-07-24",
@@ -72,6 +72,21 @@
       "score_thuis": 0,
       "score_uit": 0,
       "locatie": "Paderborn",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-25",
+      "datum_str": "Samstag, 25. Juli 2026",
+      "tijdstip": "19:00",
+      "thuis": "Hamburg Stealers",
+      "thuis_afk": "HAM",
+      "uit": "Guggenberger Legionäre",
+      "uit_afk": "REG",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Hamburg",
       "divisie": null,
       "gespeeld": true,
       "live": false
