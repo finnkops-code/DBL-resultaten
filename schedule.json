@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-26T11:53:09Z",
+  "bijgewerkt": "2026-07-26T12:53:54Z",
   "uitslagen": [
     {
       "datum": "2026-07-24",
@@ -130,9 +130,24 @@
       "uit": "Cologne Cardinals",
       "uit_afk": "CGN",
       "score_thuis": 0,
-      "score_uit": 0,
+      "score_uit": 17,
       "locatie": "Dortmund",
       "divisie": "Nord",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-26",
+      "datum_str": "Sonntag, 26. Juli 2026",
+      "tijdstip": "14:00",
+      "thuis": "München-Haar Disciples",
+      "thuis_afk": "MUC",
+      "uit": "Stuttgart Reds",
+      "uit_afk": "STR",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Haar",
+      "divisie": "Süd",
       "gespeeld": true,
       "live": false
     }
