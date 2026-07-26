@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-07-26T10:27:02Z",
+  "bijgewerkt": "2026-07-26T11:53:09Z",
   "uitslagen": [
     {
       "datum": "2026-07-24",
@@ -88,6 +88,51 @@
       "score_uit": 7,
       "locatie": "Hamburg",
       "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-26",
+      "datum_str": "Sonntag, 26. Juli 2026",
+      "tijdstip": "13:00",
+      "thuis": "Untouchables Paderborn",
+      "thuis_afk": "PAD",
+      "uit": "Heidenheim Heideköpfe",
+      "uit_afk": "HDH",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Paderborn",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-26",
+      "datum_str": "Sonntag, 26. Juli 2026",
+      "tijdstip": "13:00",
+      "thuis": "Hamburg Stealers",
+      "thuis_afk": "HAM",
+      "uit": "Guggenberger Legionäre",
+      "uit_afk": "REG",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Hamburg",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-07-26",
+      "datum_str": "Sonntag, 26. Juli 2026",
+      "tijdstip": "13:00",
+      "thuis": "Dortmund Wanderers",
+      "thuis_afk": "DOR",
+      "uit": "Cologne Cardinals",
+      "uit_afk": "CGN",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Dortmund",
+      "divisie": "Nord",
       "gespeeld": true,
       "live": false
     }
