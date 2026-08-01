@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-08-01T16:45:18Z",
+  "bijgewerkt": "2026-08-01T17:50:24Z",
   "uitslagen": [
     {
       "datum": "2026-08-01",
@@ -28,6 +28,51 @@
       "score_uit": 0,
       "locatie": "Heidenheim an der Brenz",
       "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-01",
+      "datum_str": "Samstag, 01. August 2026",
+      "tijdstip": "19:00",
+      "thuis": "Guggenberger Legionäre",
+      "thuis_afk": "REG",
+      "uit": "Untouchables Paderborn",
+      "uit_afk": "PAD",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Regensburg",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-01",
+      "datum_str": "Samstag, 01. August 2026",
+      "tijdstip": "19:00",
+      "thuis": "Mainz Athletics",
+      "thuis_afk": "MNZ",
+      "uit": "Hamburg Stealers",
+      "uit_afk": "HAM",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Mainz",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-01",
+      "datum_str": "Samstag, 01. August 2026",
+      "tijdstip": "19:00",
+      "thuis": "Stuttgart Reds",
+      "thuis_afk": "STR",
+      "uit": "Gauting Indians",
+      "uit_afk": "GAU",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Stuttgart",
+      "divisie": "Süd",
       "gespeeld": true,
       "live": false
     }
