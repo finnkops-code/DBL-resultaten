@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-08-01T18:05:00Z",
+  "bijgewerkt": "2026-08-01T18:50:57Z",
   "uitslagen": [
     {
       "datum": "2026-08-01",
@@ -24,8 +24,8 @@
       "thuis_afk": "HDH",
       "uit": "Bonn Capitals",
       "uit_afk": "BON",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 2,
+      "score_uit": 12,
       "locatie": "Heidenheim an der Brenz",
       "divisie": null,
       "gespeeld": true,
