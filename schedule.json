@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-08-02T10:24:01Z",
+  "bijgewerkt": "2026-08-02T11:52:14Z",
   "uitslagen": [
     {
       "datum": "2026-08-01",
@@ -88,6 +88,36 @@
       "score_uit": 0,
       "locatie": "Mainz",
       "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-02",
+      "datum_str": "Sonntag, 02. August 2026",
+      "tijdstip": "13:00",
+      "thuis": "Heidenheim Heideköpfe",
+      "thuis_afk": "HDH",
+      "uit": "Bonn Capitals",
+      "uit_afk": "BON",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Heidenheim an der Brenz",
+      "divisie": null,
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-02",
+      "datum_str": "Sonntag, 02. August 2026",
+      "tijdstip": "13:00",
+      "thuis": "Stuttgart Reds",
+      "thuis_afk": "STR",
+      "uit": "Gauting Indians",
+      "uit_afk": "GAU",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Stuttgart",
+      "divisie": "Süd",
       "gespeeld": true,
       "live": false
     }
