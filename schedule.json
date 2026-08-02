@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-08-02T08:01:29Z",
+  "bijgewerkt": "2026-08-02T10:24:01Z",
   "uitslagen": [
     {
       "datum": "2026-08-01",
@@ -73,6 +73,21 @@
       "score_uit": 11,
       "locatie": "Stuttgart",
       "divisie": "Süd",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-02",
+      "datum_str": "Sonntag, 02. August 2026",
+      "tijdstip": "12:00",
+      "thuis": "Mainz Athletics",
+      "thuis_afk": "MNZ",
+      "uit": "Hamburg Stealers",
+      "uit_afk": "HAM",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Mainz",
+      "divisie": null,
       "gespeeld": true,
       "live": false
     }
