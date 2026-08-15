@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-08-15T15:09:13Z",
+  "bijgewerkt": "2026-08-15T16:10:24Z",
   "uitslagen": [
     {
       "datum": "2026-08-15",
@@ -12,6 +12,36 @@
       "score_thuis": 0,
       "score_uit": 0,
       "locatie": "Regensburg",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-15",
+      "datum_str": "Samstag, 15. August 2026",
+      "tijdstip": "18:00",
+      "thuis": "Bonn Capitals",
+      "thuis_afk": "BON",
+      "uit": "Stuttgart Reds",
+      "uit_afk": "STR",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Bonn",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-15",
+      "datum_str": "Samstag, 15. August 2026",
+      "tijdstip": "18:00",
+      "thuis": "Heidenheim Heideköpfe",
+      "thuis_afk": "HDH",
+      "uit": "Untouchables Paderborn",
+      "uit_afk": "PAD",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Heidenheim an der Brenz",
       "divisie": "Playoff",
       "gespeeld": true,
       "live": false
