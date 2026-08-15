@@ -1,5 +1,21 @@
 {
-  "bijgewerkt": "2026-08-15T14:11:03Z",
-  "uitslagen": [],
+  "bijgewerkt": "2026-08-15T15:09:13Z",
+  "uitslagen": [
+    {
+      "datum": "2026-08-15",
+      "datum_str": "Samstag, 15. August 2026",
+      "tijdstip": "16:30",
+      "thuis": "Guggenberger Legionäre",
+      "thuis_afk": "REG",
+      "uit": "Cologne Cardinals",
+      "uit_afk": "CGN",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Regensburg",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
   "programma": []
 }
