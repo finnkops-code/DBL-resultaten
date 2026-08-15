@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-08-15T16:10:24Z",
+  "bijgewerkt": "2026-08-15T17:11:05Z",
   "uitslagen": [
     {
       "datum": "2026-08-15",
@@ -42,6 +42,21 @@
       "score_thuis": 0,
       "score_uit": 0,
       "locatie": "Heidenheim an der Brenz",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-15",
+      "datum_str": "Samstag, 15. August 2026",
+      "tijdstip": "19:00",
+      "thuis": "Hamburg Stealers",
+      "thuis_afk": "HAM",
+      "uit": "Mainz Athletics",
+      "uit_afk": "MNZ",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Hamburg",
       "divisie": "Playoff",
       "gespeeld": true,
       "live": false
