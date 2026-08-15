@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-08-15T18:11:43Z",
+  "bijgewerkt": "2026-08-15T19:13:20Z",
   "uitslagen": [
     {
       "datum": "2026-08-15",
@@ -24,8 +24,8 @@
       "thuis_afk": "BON",
       "uit": "Stuttgart Reds",
       "uit_afk": "STR",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 10,
+      "score_uit": 2,
       "locatie": "Bonn",
       "divisie": "Playoff",
       "gespeeld": true,
@@ -39,8 +39,8 @@
       "thuis_afk": "HDH",
       "uit": "Untouchables Paderborn",
       "uit_afk": "PAD",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 6,
+      "score_uit": 1,
       "locatie": "Heidenheim an der Brenz",
       "divisie": "Playoff",
       "gespeeld": true,
