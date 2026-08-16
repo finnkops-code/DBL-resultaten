@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-08-16T13:22:57Z",
+  "bijgewerkt": "2026-08-16T14:12:18Z",
   "uitslagen": [
     {
       "datum": "2026-08-15",
@@ -84,8 +84,8 @@
       "thuis_afk": "REG",
       "uit": "Cologne Cardinals",
       "uit_afk": "CGN",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 9,
+      "score_uit": 6,
       "locatie": "Regensburg",
       "divisie": "Playoff",
       "gespeeld": true,
@@ -99,8 +99,8 @@
       "thuis_afk": "HDH",
       "uit": "Untouchables Paderborn",
       "uit_afk": "PAD",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 8,
+      "score_uit": 2,
       "locatie": "Heidenheim an der Brenz",
       "divisie": "Playoff",
       "gespeeld": true,
