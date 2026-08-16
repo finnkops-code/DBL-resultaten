@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-08-16T10:11:13Z",
+  "bijgewerkt": "2026-08-16T11:10:04Z",
   "uitslagen": [
     {
       "datum": "2026-08-15",
@@ -72,6 +72,36 @@
       "score_thuis": 0,
       "score_uit": 0,
       "locatie": "Hamburg",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-16",
+      "datum_str": "Sonntag, 16. August 2026",
+      "tijdstip": "13:00",
+      "thuis": "Guggenberger Legionäre",
+      "thuis_afk": "REG",
+      "uit": "Cologne Cardinals",
+      "uit_afk": "CGN",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Regensburg",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-16",
+      "datum_str": "Sonntag, 16. August 2026",
+      "tijdstip": "13:00",
+      "thuis": "Heidenheim Heideköpfe",
+      "thuis_afk": "HDH",
+      "uit": "Untouchables Paderborn",
+      "uit_afk": "PAD",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Heidenheim an der Brenz",
       "divisie": "Playoff",
       "gespeeld": true,
       "live": false
