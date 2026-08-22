@@ -1,5 +1,21 @@
 {
-  "bijgewerkt": "2026-08-22T13:22:56Z",
-  "uitslagen": [],
+  "bijgewerkt": "2026-08-22T14:10:25Z",
+  "uitslagen": [
+    {
+      "datum": "2026-08-22",
+      "datum_str": "Samstag, 22. August 2026",
+      "tijdstip": "16:00",
+      "thuis": "Cologne Cardinals",
+      "thuis_afk": "CGN",
+      "uit": "Guggenberger Legionäre",
+      "uit_afk": "REG",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Köln",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
   "programma": []
 }
