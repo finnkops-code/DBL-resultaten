@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-08-22T16:09:54Z",
+  "bijgewerkt": "2026-08-22T17:10:48Z",
   "uitslagen": [
     {
       "datum": "2026-08-22",
@@ -10,7 +10,7 @@
       "uit": "Guggenberger Legionäre",
       "uit_afk": "REG",
       "score_thuis": 0,
-      "score_uit": 0,
+      "score_uit": 14,
       "locatie": "Köln",
       "divisie": "Playoff",
       "gespeeld": true,
@@ -27,6 +27,36 @@
       "score_thuis": 0,
       "score_uit": 0,
       "locatie": "Paderborn",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-22",
+      "datum_str": "Samstag, 22. August 2026",
+      "tijdstip": "19:00",
+      "thuis": "Stuttgart Reds",
+      "thuis_afk": "STR",
+      "uit": "Bonn Capitals",
+      "uit_afk": "BON",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Stuttgart",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-22",
+      "datum_str": "Samstag, 22. August 2026",
+      "tijdstip": "19:00",
+      "thuis": "Mainz Athletics",
+      "thuis_afk": "MNZ",
+      "uit": "Hamburg Stealers",
+      "uit_afk": "HAM",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Mainz",
       "divisie": "Playoff",
       "gespeeld": true,
       "live": false
