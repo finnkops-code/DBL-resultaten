@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-08-23T09:16:41Z",
+  "bijgewerkt": "2026-08-23T10:11:57Z",
   "uitslagen": [
     {
       "datum": "2026-08-22",
@@ -57,6 +57,21 @@
       "score_thuis": 2,
       "score_uit": 3,
       "locatie": "Mainz",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-23",
+      "datum_str": "Sonntag, 23. August 2026",
+      "tijdstip": "12:00",
+      "thuis": "Untouchables Paderborn",
+      "thuis_afk": "PAD",
+      "uit": "Heidenheim Heideköpfe",
+      "uit_afk": "HDH",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Paderborn",
       "divisie": "Playoff",
       "gespeeld": true,
       "live": false
