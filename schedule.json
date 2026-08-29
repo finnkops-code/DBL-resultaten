@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-08-29T17:58:37Z",
+  "bijgewerkt": "2026-08-29T19:39:29Z",
   "uitslagen": [
     {
       "datum": "2026-08-29",
@@ -24,8 +24,8 @@
       "thuis_afk": "BON",
       "uit": "Untouchables Paderborn",
       "uit_afk": "PAD",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 3,
+      "score_uit": 8,
       "locatie": "Bonn",
       "divisie": "Playoff",
       "gespeeld": true,
