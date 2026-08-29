@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-08-29T14:45:58Z",
+  "bijgewerkt": "2026-08-29T17:58:37Z",
   "uitslagen": [
     {
       "datum": "2026-08-29",
@@ -9,9 +9,24 @@
       "thuis_afk": "REG",
       "uit": "Hamburg Stealers",
       "uit_afk": "HAM",
+      "score_thuis": 1,
+      "score_uit": 4,
+      "locatie": "Regensburg",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-29",
+      "datum_str": "Samstag, 29. August 2026",
+      "tijdstip": "18:00",
+      "thuis": "Bonn Capitals",
+      "thuis_afk": "BON",
+      "uit": "Untouchables Paderborn",
+      "uit_afk": "PAD",
       "score_thuis": 0,
       "score_uit": 0,
-      "locatie": "Regensburg",
+      "locatie": "Bonn",
       "divisie": "Playoff",
       "gespeeld": true,
       "live": false
