@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-08-30T06:01:21Z",
+  "bijgewerkt": "2026-08-30T12:22:33Z",
   "uitslagen": [
     {
       "datum": "2026-08-29",
@@ -27,6 +27,36 @@
       "score_thuis": 3,
       "score_uit": 8,
       "locatie": "Bonn",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-30",
+      "datum_str": "Sonntag, 30. August 2026",
+      "tijdstip": "14:00",
+      "thuis": "Bonn Capitals",
+      "thuis_afk": "BON",
+      "uit": "Untouchables Paderborn",
+      "uit_afk": "PAD",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Bonn",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-08-30",
+      "datum_str": "Sonntag, 30. August 2026",
+      "tijdstip": "14:00",
+      "thuis": "Guggenberger Legionäre",
+      "thuis_afk": "REG",
+      "uit": "Hamburg Stealers",
+      "uit_afk": "HAM",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Regensburg",
       "divisie": "Playoff",
       "gespeeld": true,
       "live": false
