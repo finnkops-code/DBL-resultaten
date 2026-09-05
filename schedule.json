@@ -1,5 +1,21 @@
 {
-  "bijgewerkt": "2026-09-05T16:21:14Z",
-  "uitslagen": [],
+  "bijgewerkt": "2026-09-05T18:39:16Z",
+  "uitslagen": [
+    {
+      "datum": "2026-09-05",
+      "datum_str": "Samstag, 05. September 2026",
+      "tijdstip": "18:30",
+      "thuis": "Untouchables Paderborn",
+      "thuis_afk": "PAD",
+      "uit": "Bonn Capitals",
+      "uit_afk": "BON",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Paderborn",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
   "programma": []
 }
