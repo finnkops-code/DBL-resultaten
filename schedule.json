@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-09-05T18:57:15Z",
+  "bijgewerkt": "2026-09-05T20:47:31Z",
   "uitslagen": [
     {
       "datum": "2026-09-05",
@@ -9,8 +9,8 @@
       "thuis_afk": "PAD",
       "uit": "Bonn Capitals",
       "uit_afk": "BON",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 4,
+      "score_uit": 3,
       "locatie": "Paderborn",
       "divisie": "Playoff",
       "gespeeld": true,
