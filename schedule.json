@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-09-06T09:49:16Z",
+  "bijgewerkt": "2026-09-06T13:15:11Z",
   "uitslagen": [
     {
       "datum": "2026-09-05",
@@ -11,6 +11,36 @@
       "uit_afk": "BON",
       "score_thuis": 4,
       "score_uit": 3,
+      "locatie": "Paderborn",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-09-06",
+      "datum_str": "Sonntag, 06. September 2026",
+      "tijdstip": "12:00",
+      "thuis": "Hamburg Stealers",
+      "thuis_afk": "HAM",
+      "uit": "Guggenberger Legionäre",
+      "uit_afk": "REG",
+      "score_thuis": 0,
+      "score_uit": 0,
+      "locatie": "Hamburg",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-09-06",
+      "datum_str": "Sonntag, 06. September 2026",
+      "tijdstip": "13:00",
+      "thuis": "Untouchables Paderborn",
+      "thuis_afk": "PAD",
+      "uit": "Bonn Capitals",
+      "uit_afk": "BON",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Paderborn",
       "divisie": "Playoff",
       "gespeeld": true,
