@@ -1,5 +1,21 @@
 {
-  "bijgewerkt": "2026-09-12T11:21:21Z",
-  "uitslagen": [],
+  "bijgewerkt": "2026-09-12T14:32:01Z",
+  "uitslagen": [
+    {
+      "datum": "2026-09-12",
+      "datum_str": "Samstag, 12. September 2026",
+      "tijdstip": "14:00",
+      "thuis": "Bonn Capitals",
+      "thuis_afk": "BON",
+      "uit": "Guggenberger Legionäre",
+      "uit_afk": "REG",
+      "score_thuis": 4,
+      "score_uit": 1,
+      "locatie": "Bonn",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    }
+  ],
   "programma": []
 }
