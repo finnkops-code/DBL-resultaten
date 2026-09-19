@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-09-19T12:07:06Z",
+  "bijgewerkt": "2026-09-19T16:08:37Z",
   "uitslagen": [
     {
       "datum": "2026-09-19",
@@ -9,8 +9,8 @@
       "thuis_afk": "BON",
       "uit": "Guggenberger Legionäre",
       "uit_afk": "REG",
-      "score_thuis": 0,
-      "score_uit": 0,
+      "score_thuis": 4,
+      "score_uit": 2,
       "locatie": "Regensburg",
       "divisie": "Playoff",
       "gespeeld": true,
