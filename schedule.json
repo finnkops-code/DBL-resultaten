@@ -1,5 +1,5 @@
 {
-  "bijgewerkt": "2026-09-20T07:59:24Z",
+  "bijgewerkt": "2026-09-20T12:52:16Z",
   "uitslagen": [
     {
       "datum": "2026-09-19",
@@ -11,6 +11,21 @@
       "uit_afk": "REG",
       "score_thuis": 4,
       "score_uit": 2,
+      "locatie": "Regensburg",
+      "divisie": "Playoff",
+      "gespeeld": true,
+      "live": false
+    },
+    {
+      "datum": "2026-09-20",
+      "datum_str": "Sonntag, 20. September 2026",
+      "tijdstip": "14:00",
+      "thuis": "Guggenberger Legionäre",
+      "thuis_afk": "REG",
+      "uit": "Bonn Capitals",
+      "uit_afk": "BON",
+      "score_thuis": 0,
+      "score_uit": 0,
       "locatie": "Regensburg",
       "divisie": "Playoff",
       "gespeeld": true,
